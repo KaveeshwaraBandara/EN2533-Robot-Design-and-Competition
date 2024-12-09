@@ -1963,15 +1963,13 @@ int getBluePW() {
 //detect gate closed or open (open retuns false.. close returns true)
 bool gateDetected(){
   int distance;
-  do{
     distance = Tof1read();
     if(distance < 0.25){      //assume that tof output is in meters(condition for distance less than 25cm)
       return true;
     }
     else{
       return false;
-    }   
-  }
+    }
 }
 
 //count the number of sensors detect white surface
