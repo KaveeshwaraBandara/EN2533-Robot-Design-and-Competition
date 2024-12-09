@@ -943,7 +943,7 @@ void task6() {
   if (linecolor == 1){ //1 is blue
     do{
       inversereadline();
-      inverselinefollow();
+      linefollow();
     }while(sensorArray[0] == 0 && sensorArray[7] == 0); //zero is black
     Turnleft();
 
@@ -951,7 +951,7 @@ void task6() {
 
     do{
       inversereadline();
-      inverselinefollow();
+      linefollow();
       distance1 = Tof1read(); //define
     }while(distance1 <= 5);
     Grabbox();
@@ -960,7 +960,7 @@ void task6() {
     uTurn();
     do{
       inversereadline();
-      inverselinefollow();
+      linefollow();
     }while(sensorArray[0] == 0 && sensorArray[7] == 0); //zero is black
     //largest box
     if(distance2 <= 10 && distance3 <= 10){
@@ -969,7 +969,7 @@ void task6() {
       distance_right = 0;
       do{
         inversereadline();
-        inverselinefollow();
+        linefollow();
         float distance_left = (position_left / CPR) * CIRCUMFERENCE; // Distance in meters
         float distance_right = (position_right / CPR) * CIRCUMFERENCE; // Distance in meters
         float length = (distance_left + distance_right)/2;  //average value
@@ -979,7 +979,7 @@ void task6() {
       Turnright();
       do{
       inversereadline();
-      inverselinefollow();
+      linefollow();
       }while(sensorArray[0] == 0 && sensorArray[7] == 0); //zero is black
       Turnright();
     }
@@ -988,7 +988,7 @@ void task6() {
       Turnleft();
       do{
       inversereadline();
-      inverselinefollow();
+      linefollow();
       }while(sensorArray[0] == 0 && sensorArray[7] == 0); //zero is black
       Turnright();
       Placerealbox();
@@ -1001,7 +1001,7 @@ void task6() {
       Turnleft();
       do{
         inversereadline();
-        inverselinefollow();
+        linefollow();
       }while(sensorArray[0] == 0 && sensorArray[7] == 0); //zero is black
       Turnleft();
     }
@@ -1010,7 +1010,7 @@ void task6() {
 
     do{
       inversereadline();
-      inverselinefollow();
+      linefollow();
       distance1 = Tof1read(); //define
     }while(distance1 <= 5);
     Grabbox();
@@ -1019,7 +1019,7 @@ void task6() {
     uTurn();
     do{
       inversereadline();
-      inverselinefollow();
+      linefollow();
     }while(sensorArray[0] == 0 && sensorArray[7] == 0); //zero is black
 
     //large box
@@ -1027,7 +1027,7 @@ void task6() {
       Turnleft();
       do{
       inversereadline();
-      inverselinefollow();
+      linefollow();
       }while(sensorArray[0] == 0 && sensorArray[7] == 0); //zero is black
       Turnright();
       Placerealbox();
@@ -1040,7 +1040,7 @@ void task6() {
         Turnleft();
         do{
           inversereadline();
-          inverselinefollow();
+          linefollow();
         }while(sensorArray[0] == 0 && sensorArray[7] == 0); //zero is black
         Turnleft();
       }
@@ -1049,7 +1049,7 @@ void task6() {
         Turnright();
         do{
           inversereadline();
-          inverselinefollow();
+          linefollow();
           }while(sensorArray[0] == 0 && sensorArray[7] == 0); //zero is black
         Turnleft();
         Placerealbox();
@@ -1058,7 +1058,7 @@ void task6() {
         distance_right = 0;
         do{
           inversereadline();
-          inverselinefollow();
+          linefollow();
           float distance_left = (position_left / CPR) * CIRCUMFERENCE; // Distance in meters
           float distance_right = (position_right / CPR) * CIRCUMFERENCE; // Distance in meters
           float length = (distance_left + distance_right)/2;  //average value
@@ -1070,7 +1070,7 @@ void task6() {
 
     do{
       inversereadline();
-      inverselinefollow();
+      linefollow();
       distance1 = Tof1read(); //define
     }while(distance1 <= 5);
     Grabbox();
@@ -1079,7 +1079,7 @@ void task6() {
     uTurn();
     do{
       inversereadline();
-      inverselinefollow();
+      linefollow();
     }while(sensorArray[0] == 0 && sensorArray[7] == 0); //zero is black
 
     //large box
@@ -1090,7 +1090,7 @@ void task6() {
         distance_right = 0;
       do{
         inversereadline();
-        inverselinefollow();
+        linefollow();
         float distance_left = (position_left / CPR) * CIRCUMFERENCE; // Distance in meters
         float distance_right = (position_right / CPR) * CIRCUMFERENCE; // Distance in meters
         float length = (distance_left + distance_right)/2;  //average value
@@ -1101,7 +1101,7 @@ void task6() {
         Turnright();
         do{
           inversereadline();
-          inverselinefollow();
+          linefollow();
           }while(sensorArray[0] == 0 && sensorArray[7] == 0); //zero is black
         Turnleft();
         Placerealbox();
@@ -1110,7 +1110,7 @@ void task6() {
         distance_right = 0;
         do{
           inversereadline();
-          inverselinefollow();
+          linefollow();
           float distance_left = (position_left / CPR) * CIRCUMFERENCE; // Distance in meters
           float distance_right = (position_right / CPR) * CIRCUMFERENCE; // Distance in meters
           float length = (distance_left + distance_right)/2;  //average value
@@ -1123,7 +1123,7 @@ void task6() {
       distance_right = 0;
       do{
         inversereadline();
-        inverselinefollow();
+        linefollow();
         float distance_left = (position_left / CPR) * CIRCUMFERENCE; // Distance in meters
         float distance_right = (position_right / CPR) * CIRCUMFERENCE; // Distance in meters
         float length = (distance_left + distance_right)/2;  //average value
@@ -1135,7 +1135,7 @@ void task6() {
       distance_right = 0;
       do{
         inversereadline();
-        inverselinefollow();
+        linefollow();
         float distance_left = (position_left / CPR) * CIRCUMFERENCE; // Distance in meters
         float distance_right = (position_right / CPR) * CIRCUMFERENCE; // Distance in meters
         float length = (distance_left + distance_right)/2;  //average value
@@ -1145,7 +1145,7 @@ void task6() {
   if (linecolor == 2){ //2 is red
     do{
       inversereadline();
-      inverselinefollow();
+      linefollow();
     }while(sensorArray[0] == 0 && sensorArray[7] == 0); //zero is black
     Turnleft();
 
@@ -1153,7 +1153,7 @@ void task6() {
 
     do{
       inversereadline();
-      inverselinefollow();
+      linefollow();
       distance1 = Tof1read(); //define
     }while(distance1 <= 5);
     Grabbox();
@@ -1162,7 +1162,7 @@ void task6() {
     uTurn();
     do{
       inversereadline();
-      inverselinefollow();
+      linefollow();
     }while(sensorArray[0] == 0 && sensorArray[7] == 0); //zero is black
     //small box
     if(distance2 > 10 && distance3 > 10){
@@ -1171,7 +1171,7 @@ void task6() {
       distance_right = 0;
       do{
         inversereadline();
-        inverselinefollow();
+        linefollow();
         float distance_left = (position_left / CPR) * CIRCUMFERENCE; // Distance in meters
         float distance_right = (position_right / CPR) * CIRCUMFERENCE; // Distance in meters
         float length = (distance_left + distance_right)/2;  //average value
@@ -1181,7 +1181,7 @@ void task6() {
       Turnright();
       do{
       inversereadline();
-      inverselinefollow();
+      linefollow();
       }while(sensorArray[0] == 0 && sensorArray[7] == 0); //zero is black
       Turnright();
     }
@@ -1190,7 +1190,7 @@ void task6() {
       Turnleft();
       do{
       inversereadline();
-      inverselinefollow();
+      linefollow();
       }while(sensorArray[0] == 0 && sensorArray[7] == 0); //zero is black
       Turnright();
       Placerealbox();
@@ -1203,7 +1203,7 @@ void task6() {
       Turnleft();
       do{
         inversereadline();
-        inverselinefollow();
+        linefollow();
       }while(sensorArray[0] == 0 && sensorArray[7] == 0); //zero is black
       Turnleft();
     }
@@ -1212,7 +1212,7 @@ void task6() {
 
     do{
       inversereadline();
-      inverselinefollow();
+      linefollow();
       distance1 = Tof1read(); //define
     }while(distance1 <= 5);
     Grabbox();
@@ -1221,7 +1221,7 @@ void task6() {
     uTurn();
     do{
       inversereadline();
-      inverselinefollow();
+      linefollow();
     }while(sensorArray[0] == 0 && sensorArray[7] == 0); //zero is black
 
     //small box
@@ -1229,7 +1229,7 @@ void task6() {
       Turnleft();
       do{
       inversereadline();
-      inverselinefollow();
+      linefollow();
       }while(sensorArray[0] == 0 && sensorArray[7] == 0); //zero is black
       Turnright();
       Placerealbox();
@@ -1242,7 +1242,7 @@ void task6() {
         Turnleft();
         do{
           inversereadline();
-          inverselinefollow();
+          linefollow();
         }while(sensorArray[0] == 0 && sensorArray[7] == 0); //zero is black
         Turnleft();
       }
@@ -1251,7 +1251,7 @@ void task6() {
         Turnright();
         do{
           inversereadline();
-          inverselinefollow();
+          linefollow();
           }while(sensorArray[0] == 0 && sensorArray[7] == 0); //zero is black
         }Turnleft();
         Placerealbox();
@@ -1260,7 +1260,7 @@ void task6() {
         distance_right = 0;
         do{
           inversereadline();
-          inverselinefollow();
+          linefollow();
           float distance_left = (position_left / CPR) * CIRCUMFERENCE; // Distance in meters
           float distance_right = (position_right / CPR) * CIRCUMFERENCE; // Distance in meters
           float length = (distance_left + distance_right)/2;  //average value
@@ -1272,7 +1272,7 @@ void task6() {
 
     do{
       inversereadline();
-      inverselinefollow();
+      linefollow();
       distance1 = Tof1read(); //define
     }while(distance1 <= 5);
     Grabbox();
@@ -1281,7 +1281,7 @@ void task6() {
     uTurn();
     do{
       inversereadline();
-      inverselinefollow();
+      linefollow();
     }while(sensorArray[0] == 0 && sensorArray[7] == 0); //zero is black
 
     //small box
@@ -1292,7 +1292,7 @@ void task6() {
         distance_right = 0;
       do{
         inversereadline();
-        inverselinefollow();
+        linefollow();
         float distance_left = (position_left / CPR) * CIRCUMFERENCE; // Distance in meters
         float distance_right = (position_right / CPR) * CIRCUMFERENCE; // Distance in meters
         float length = (distance_left + distance_right)/2;  //average value
@@ -1303,7 +1303,7 @@ void task6() {
         Turnright();
         do{
           inversereadline();
-          inverselinefollow();
+          linefollow();
           }while(sensorArray[0] == 0 && sensorArray[7] == 0); //zero is black
         Turnleft();
         Placerealbox();
@@ -1312,7 +1312,7 @@ void task6() {
         distance_right = 0;
         do{
           inversereadline();
-          inverselinefollow();
+          linefollow();
           float distance_left = (position_left / CPR) * CIRCUMFERENCE; // Distance in meters
           float distance_right = (position_right / CPR) * CIRCUMFERENCE; // Distance in meters
           float length = (distance_left + distance_right)/2;  //average value
@@ -1325,7 +1325,7 @@ void task6() {
       distance_right = 0;
       do{
         inversereadline();
-        inverselinefollow();
+        linefollow();
         float distance_left = (position_left / CPR) * CIRCUMFERENCE; // Distance in meters
         float distance_right = (position_right / CPR) * CIRCUMFERENCE; // Distance in meters
         float length = (distance_left + distance_right)/2;  //average value
@@ -1337,7 +1337,7 @@ void task6() {
       distance_right = 0;
       do{
         inversereadline();
-        inverselinefollow();
+        linefollow();
         float distance_left = (position_left / CPR) * CIRCUMFERENCE; // Distance in meters
         float distance_right = (position_right / CPR) * CIRCUMFERENCE; // Distance in meters
         float length = (distance_left + distance_right)/2;  //average value
@@ -1844,7 +1844,7 @@ void Placerealbox(){
   distance_right = 0;
   do{
     inversereadline();
-    inverselinefollow();
+    linefollow();
     float distance_left = (position_left / CPR) * CIRCUMFERENCE; // Distance in meters
     float distance_right = (position_right / CPR) * CIRCUMFERENCE; // Distance in meters
     float length = (distance_left + distance_right)/2;  //average value
@@ -1856,18 +1856,35 @@ void Placerealbox(){
     Turnleft();
 }
 
-//linefollow in black line
-void inverselinefollow(){
-//online = 0
-}
+// //linefollow in black line
+// void inverselinefollow(){
+// //online = 0
+// }
 
 //detect a black line
 void inversereadline(){
 //readline check the conditions and change to read black line for error correction
+  onLine = 1;
+  if (numSensors == 8) {
+    for (int i = 0; i < 8; i++) {
+      if (isBlackLine) {
+        sensorValue[i] = map(analogRead(i), minValues[i], maxValues[i], 0, 1000);
+      } else {
+        sensorValue[i] = map(analogRead(i), minValues[i], maxValues[i], 1000, 0);
+      }
+      sensorValue[i] = constrain(sensorValue[i], 0, 1000);
+      sensorArray[i] = sensorValue[i] > 500;
+      if (sensorArray[i]) onLine = 1;
+
+      if (isBlackLine == 1 && sensorArray[i]) onLine = 1;
+      if (isBlackLine == 0 && !sensorValue[i]) onLine = 1;
+    }
+  }
 }
 
+//move back in black line with syncrhonization
 void movebackinverse(){
-//move bck in black line with syncrhonization
+
 }
 
 void Dropbox(){
@@ -1903,4 +1920,3 @@ int getBluePW() {
   PW = pulseIn(sensorOut, LOW);
   return PW;
 }
-//kavee
