@@ -34,7 +34,7 @@ double error = 0.00;
 int lsp, rsp;
 int lfSpeed = 70;
 int currentSpeed = 30;
-int sensorWeight[8] = { 4, 2, 1, 0, 0, -1, -2, -4 };
+int sensorWeight[8] = {5, 4, 2, 1, 0, 0, -1, -2, -4, -5};
 int activeSensors;
 float Kp = 0.007;
 float Kd = 0.005;
@@ -43,7 +43,7 @@ float Ki = 0.00;
 int onLine = 1;
 
 //Define arrays for store IR Array readings
-int minValues[8], maxValues[8], threshold[8], sensorValue[8], sensorArray[8];
+int minValues[10], maxValues[10], threshold[10], sensorValue[10], sensorArray[10];
 
 // Define color sensor pins
 #define S0 3
@@ -242,7 +242,7 @@ void task1() {
   
   readLine();
   int count = 0;
-  for (int i = 0; i < 8; i++) {
+  for (int i = 0; i < 10; i++) {
     if (sensorArray[i]){                     //check this condition for if because i didnt remembere output in ir array high or low for white surface
       count++;
     }
@@ -284,7 +284,7 @@ void task2() {
     do{
       readLine();
       linefollow(); 
-    }while(sensorArray[6] == 1 && sensorArray[7] == 1); 
+    }while(sensorArray[8] == 1 && sensorArray[9] == 1); 
     motor2run(0);
     motor1run(0);
 
@@ -333,12 +333,12 @@ void task2() {
       do{
         readLine();
         linefollow(); 
-      }while(sensorArray[0] == 1 && sensorArray[1] == 1||sensorArray[6] == 1 && sensorArray[7] == 1);
+      }while(sensorArray[0] == 1 && sensorArray[1] == 1||sensorArray[8] == 1 && sensorArray[9] == 1);
       //check if theres need for little bit move above for avoiding unnecessary turns
       do{
         readLine();
         linefollow(); 
-      }while(sensorArray[0] == 1 && sensorArray[1] == 1||sensorArray[6] == 1 && sensorArray[7] == 1);
+      }while(sensorArray[0] == 1 && sensorArray[1] == 1||sensorArray[8] == 1 && sensorArray[9] == 1);
       
       motor2run(0);
       motor1run(0);
@@ -404,7 +404,7 @@ void task2() {
       do{
         readLine();
         linefollow(); 
-      }while(sensorArray[6] == 1 && sensorArray[7] == 1);
+      }while(sensorArray[8] == 1 && sensorArray[9] == 1);
 
       motor2run(0);
       motor1run(0);
@@ -414,7 +414,7 @@ void task2() {
       do{
         readLine();
         linefollow(); 
-      }while(sensorArray[0] == 1 && sensorArray[1] == 1||sensorArray[6] == 1 && sensorArray[7] == 1);
+      }while(sensorArray[0] == 1 && sensorArray[1] == 1||sensorArray[8] == 1 && sensorArray[9] == 1);
 
       motor2run(0);
       motor1run(0);
@@ -424,7 +424,7 @@ void task2() {
       do{
         readLine();
         linefollow(); 
-      }while(sensorArray[0] == 1 && sensorArray[1] == 1||sensorArray[6] == 1 && sensorArray[7] == 1);
+      }while(sensorArray[0] == 1 && sensorArray[1] == 1||sensorArray[8] == 1 && sensorArray[9] == 1);
 
       motor2run(0);
       motor1run(0);
@@ -434,7 +434,7 @@ void task2() {
       do{
         readLine();
         linefollow(); 
-      }while(sensorArray[0] == 1 && sensorArray[1] == 1||sensorArray[6] == 1 && sensorArray[7] == 1);
+      }while(sensorArray[0] == 1 && sensorArray[1] == 1||sensorArray[8] == 1 && sensorArray[9] == 1);
 
       motor2run(0);
       motor1run(0);
@@ -444,7 +444,7 @@ void task2() {
       do{
         readLine();
         linefollow(); 
-      }while(sensorArray[0] == 1 && sensorArray[1] == 1||sensorArray[6] == 1 && sensorArray[7] == 1);
+      }while(sensorArray[0] == 1 && sensorArray[1] == 1||sensorArray[8] == 1 && sensorArray[9] == 1);
 
       motor2run(0);
       motor1run(0);
@@ -465,12 +465,12 @@ void task2() {
       do{
         readLine();
         linefollow(); 
-      }while(sensorArray[0] == 1 && sensorArray[1] == 1||sensorArray[6] == 1 && sensorArray[7] == 1);
+      }while(sensorArray[0] == 1 && sensorArray[1] == 1||sensorArray[8] == 1 && sensorArray[9] == 1);
 
       do{
         readLine();
         linefollow(); 
-      }while(sensorArray[0] == 1 && sensorArray[1] == 1||sensorArray[6] == 1 && sensorArray[7] == 1);
+      }while(sensorArray[0] == 1 && sensorArray[1] == 1||sensorArray[8] == 1 && sensorArray[9] == 1);
 
       motor2run(0);
       motor1run(0);
@@ -498,7 +498,7 @@ void task2() {
       do{
         readLine();
         linefollow(); 
-      }while(sensorArray[6] == 1 && sensorArray[7] == 1);
+      }while(sensorArray[8] == 1 && sensorArray[9] == 1);
 
       motor2run(0);
       motor1run(0);
@@ -508,7 +508,7 @@ void task2() {
       do{
         readLine();
         linefollow(); 
-      }while(sensorArray[0] == 1 && sensorArray[1] == 1||sensorArray[6] == 1 && sensorArray[7] == 1);
+      }while(sensorArray[0] == 1 && sensorArray[1] == 1||sensorArray[8] == 1 && sensorArray[9] == 1);
 
       motor2run(0);
       motor1run(0);
@@ -518,7 +518,7 @@ void task2() {
       do{
         readLine();
         linefollow(); 
-      }while(sensorArray[0] == 1 && sensorArray[1] == 1||sensorArray[6] == 1 && sensorArray[7] == 1);
+      }while(sensorArray[0] == 1 && sensorArray[1] == 1||sensorArray[8] == 1 && sensorArray[9] == 1);
 
       motor2run(0);
       motor1run(0);
@@ -537,12 +537,12 @@ void task2() {
       do{
         readLine();
         linefollow(); 
-      }while(sensorArray[0] == 1 && sensorArray[1] == 1||sensorArray[6] == 1 && sensorArray[7] == 1);
+      }while(sensorArray[0] == 1 && sensorArray[1] == 1||sensorArray[8] == 1 && sensorArray[9] == 1);
 
       do{
         readLine();
         linefollow(); 
-      }while(sensorArray[0] == 1 && sensorArray[1] == 1||sensorArray[6] == 1 && sensorArray[7] == 1);
+      }while(sensorArray[0] == 1 && sensorArray[1] == 1||sensorArray[8] == 1 && sensorArray[9] == 1);
 
       motor2run(0);
       motor1run(0);
@@ -575,7 +575,7 @@ void task2() {
       do{
         readLine();
         linefollow(); 
-      }while(sensorArray[0] == 1 && sensorArray[1] == 1||sensorArray[6] == 1 && sensorArray[7] == 1);
+      }while(sensorArray[0] == 1 && sensorArray[1] == 1||sensorArray[8] == 1 && sensorArray[9] == 1);
 
       motor2run(0);
       motor1run(0);
@@ -585,7 +585,7 @@ void task2() {
       do{
         readLine();
         linefollow(); 
-      }while(sensorArray[0] == 1 && sensorArray[1] == 1||sensorArray[6] == 1 && sensorArray[7] == 1);
+      }while(sensorArray[0] == 1 && sensorArray[1] == 1||sensorArray[8] == 1 && sensorArray[9] == 1);
 
       motor2run(0);
       motor1run(0);
@@ -595,7 +595,7 @@ void task2() {
       do{
         readLine();
         linefollow(); 
-      }while(sensorArray[0] == 1 && sensorArray[1] == 1||sensorArray[6] == 1 && sensorArray[7] == 1);
+      }while(sensorArray[0] == 1 && sensorArray[1] == 1||sensorArray[8] == 1 && sensorArray[9] == 1);
 
       motor2run(0);
       motor1run(0);
@@ -616,7 +616,7 @@ void task2() {
       do{
         readLine();
         linefollow(); 
-      }while(sensorArray[0] == 1 && sensorArray[1] == 1||sensorArray[6] == 1 && sensorArray[7] == 1);
+      }while(sensorArray[0] == 1 && sensorArray[1] == 1||sensorArray[8] == 1 && sensorArray[9] == 1);
 
       // do{
       //   readLine();
@@ -655,7 +655,7 @@ void task2() {
       do{
         readLine();
         linefollow(); 
-      }while(sensorArray[6] == 1 && sensorArray[7] == 1);
+      }while(sensorArray[8] == 1 && sensorArray[9] == 1);
 
       motor2run(0);
       motor1run(0);
@@ -665,7 +665,7 @@ void task2() {
       do{
         readLine();
         linefollow(); 
-      }while(sensorArray[0] == 1 && sensorArray[1] == 1||sensorArray[6] == 1 && sensorArray[7] == 1);
+      }while(sensorArray[0] == 1 && sensorArray[1] == 1||sensorArray[8] == 1 && sensorArray[9] == 1);
 
       motor2run(0);
       motor1run(0);
@@ -675,7 +675,7 @@ void task2() {
       do{
         readLine();
         linefollow(); 
-      }while(sensorArray[0] == 1 && sensorArray[1] == 1||sensorArray[6] == 1 && sensorArray[7] == 1);
+      }while(sensorArray[0] == 1 && sensorArray[1] == 1||sensorArray[8] == 1 && sensorArray[9] == 1);
 
       motor2run(0);
       motor1run(0);
@@ -694,7 +694,7 @@ void task2() {
       do{
         readLine();
         linefollow(); 
-      }while(sensorArray[0] == 1 && sensorArray[1] == 1||sensorArray[6] == 1 && sensorArray[7] == 1);
+      }while(sensorArray[0] == 1 && sensorArray[1] == 1||sensorArray[8] == 1 && sensorArray[9] == 1);
 
       motor2run(0);
       motor1run(0);
@@ -704,7 +704,7 @@ void task2() {
       do{
         readLine();
         linefollow(); 
-      }while(sensorArray[0] == 1 && sensorArray[1] == 1||sensorArray[6] == 1 && sensorArray[7] == 1);
+      }while(sensorArray[0] == 1 && sensorArray[1] == 1||sensorArray[8] == 1 && sensorArray[9] == 1);
 
       motor2run(0);
       motor1run(0);
@@ -726,7 +726,7 @@ void task2() {
       do{
         readLine();
         linefollow(); 
-      }while(sensorArray[0] == 1 && sensorArray[1] == 1||sensorArray[6] == 1 && sensorArray[7] == 1);
+      }while(sensorArray[0] == 1 && sensorArray[1] == 1||sensorArray[8] == 1 && sensorArray[9] == 1);
 
       // do{
       //   readLine();
@@ -771,7 +771,7 @@ void task2() {
       do{
         readLine();
         linefollow(); 
-      }while(sensorArray[6] == 1 && sensorArray[7] == 1);
+      }while(sensorArray[8] == 1 && sensorArray[9] == 1);
 
       motor2run(0);
       motor1run(0);
@@ -781,7 +781,7 @@ void task2() {
       do{
         readLine();
         linefollow(); 
-      }while(sensorArray[0] == 1 && sensorArray[1] == 1||sensorArray[6] == 1 && sensorArray[7] == 1);
+      }while(sensorArray[0] == 1 && sensorArray[1] == 1||sensorArray[8] == 1 && sensorArray[9] == 1);
 
       motor2run(0);
       motor1run(0);
@@ -791,7 +791,7 @@ void task2() {
       do{
         readLine();
         linefollow(); 
-      }while(sensorArray[0] == 1 && sensorArray[1] == 1||sensorArray[6] == 1 && sensorArray[7] == 1);
+      }while(sensorArray[0] == 1 && sensorArray[1] == 1||sensorArray[8] == 1 && sensorArray[9] == 1);
 
       motor2run(0);
       motor1run(0);
@@ -809,7 +809,7 @@ void task2() {
       do{
         readLine();
         linefollow(); 
-      }while(sensorArray[0] == 1 && sensorArray[1] == 1||sensorArray[6] == 1 && sensorArray[7] == 1);
+      }while(sensorArray[0] == 1 && sensorArray[1] == 1||sensorArray[8] == 1 && sensorArray[9] == 1);
 
       // do{
       //   readLine();
@@ -851,7 +851,7 @@ void task2() {
       do{
         readLine();
         linefollow(); 
-      }while(sensorArray[0] == 1 && sensorArray[1] == 1||sensorArray[6] == 1 && sensorArray[7] == 1);
+      }while(sensorArray[0] == 1 && sensorArray[1] == 1||sensorArray[8] == 1 && sensorArray[9] == 1);
 
       motor2run(0);
       motor1run(0);
@@ -861,7 +861,7 @@ void task2() {
       do{
         readLine();
         linefollow(); 
-      }while(sensorArray[0] == 1 && sensorArray[1] == 1||sensorArray[6] == 1 && sensorArray[7] == 1);
+      }while(sensorArray[0] == 1 && sensorArray[1] == 1||sensorArray[8] == 1 && sensorArray[9] == 1);
 
       motor2run(0);
       motor1run(0);
@@ -871,7 +871,7 @@ void task2() {
       do{
         readLine();
         linefollow(); 
-      }while(sensorArray[0] == 1 && sensorArray[1] == 1||sensorArray[6] == 1 && sensorArray[7] == 1);
+      }while(sensorArray[0] == 1 && sensorArray[1] == 1||sensorArray[8] == 1 && sensorArray[9] == 1);
 
       motor2run(0);
       motor1run(0);
@@ -944,7 +944,7 @@ void task5(){
     }while(gateDetected());
     do{
       synchronizeMotorSpeeds(1);
-    }while(sensorArray[0] == 1 && sensorArray[1] == 1||sensorArray[6] == 1 && sensorArray[7] == 1);
+    }while(sensorArray[0] == 1 && sensorArray[1] == 1||sensorArray[8] == 1 && sensorArray[9] == 1);
     currentState = STATE_TASK6;
     motor2run(0);
     motor1run(0);
@@ -961,7 +961,7 @@ void task5(){
 
     do{
       synchronizeMotorSpeeds(1);
-    }while(sensorArray[0] == 1 && sensorArray[1] == 1||sensorArray[6] == 1 && sensorArray[7] == 1);
+    }while(sensorArray[0] == 1 && sensorArray[1] == 1||sensorArray[8] == 1 && sensorArray[9] == 1);
     currentState = STATE_TASK6;
     
     motor2run(0);
@@ -975,7 +975,7 @@ void task6() {
     do{
       inversereadline();
       linefollow();
-    }while(sensorArray[0] == 0 && sensorArray[7] == 0); //zero is black
+    }while(sensorArray[0] == 0 && sensorArray[9] == 0); //zero is black
     Turnleft();
 
 // 1st box
@@ -992,7 +992,7 @@ void task6() {
     do{
       inversereadline();
       linefollow();
-    }while(sensorArray[0] == 0 && sensorArray[7] == 0); //zero is black
+    }while(sensorArray[0] == 0 && sensorArray[9] == 0); //zero is black
     //largest box
     if(distance2 <= 10 && distance3 <= 10){
       Turnleft();
@@ -1004,14 +1004,14 @@ void task6() {
         float distance_left = (position_left / CPR) * CIRCUMFERENCE; // Distance in meters
         float distance_right = (position_right / CPR) * CIRCUMFERENCE; // Distance in meters
         float length = (distance_left + distance_right)/2;  //average value
-      }while(sensorArray[0] == 0 && sensorArray[7] == 0 && length > 35); //zero is black
+      }while(sensorArray[0] == 0 && sensorArray[9] == 0 && length > 35); //zero is black
       Turnright();
       Placerealbox();
       Turnright();
       do{
       inversereadline();
       linefollow();
-      }while(sensorArray[0] == 0 && sensorArray[7] == 0); //zero is black
+      }while(sensorArray[0] == 0 && sensorArray[9] == 0); //zero is black
       Turnright();
     }
     //medium box
@@ -1020,7 +1020,7 @@ void task6() {
       do{
       inversereadline();
       linefollow();
-      }while(sensorArray[0] == 0 && sensorArray[7] == 0); //zero is black
+      }while(sensorArray[0] == 0 && sensorArray[9] == 0); //zero is black
       Turnright();
       Placerealbox();
       uTurn();
@@ -1033,7 +1033,7 @@ void task6() {
       do{
         inversereadline();
         linefollow();
-      }while(sensorArray[0] == 0 && sensorArray[7] == 0); //zero is black
+      }while(sensorArray[0] == 0 && sensorArray[9] == 0); //zero is black
       Turnleft();
     }
 
@@ -1051,7 +1051,7 @@ void task6() {
     do{
       inversereadline();
       linefollow();
-    }while(sensorArray[0] == 0 && sensorArray[7] == 0); //zero is black
+    }while(sensorArray[0] == 0 && sensorArray[9] == 0); //zero is black
 
     //large box
     if(distance2 <= 10 && distance3 <= 10){
@@ -1059,7 +1059,7 @@ void task6() {
       do{
       inversereadline();
       linefollow();
-      }while(sensorArray[0] == 0 && sensorArray[7] == 0); //zero is black
+      }while(sensorArray[0] == 0 && sensorArray[9] == 0); //zero is black
       Turnright();
       Placerealbox();
       uTurn();
@@ -1072,7 +1072,7 @@ void task6() {
         do{
           inversereadline();
           linefollow();
-        }while(sensorArray[0] == 0 && sensorArray[7] == 0); //zero is black
+        }while(sensorArray[0] == 0 && sensorArray[9] == 0); //zero is black
         Turnleft();
       }
     //small box
@@ -1081,7 +1081,7 @@ void task6() {
         do{
           inversereadline();
           linefollow();
-          }while(sensorArray[0] == 0 && sensorArray[7] == 0); //zero is black
+          }while(sensorArray[0] == 0 && sensorArray[9] == 0); //zero is black
         Turnleft();
         Placerealbox();
         Turnleft();
@@ -1093,7 +1093,7 @@ void task6() {
           float distance_left = (position_left / CPR) * CIRCUMFERENCE; // Distance in meters
           float distance_right = (position_right / CPR) * CIRCUMFERENCE; // Distance in meters
           float length = (distance_left + distance_right)/2;  //average value
-        }while(sensorArray[0] == 0 && sensorArray[7] == 0 && length > 35); //zero is black
+        }while(sensorArray[0] == 0 && sensorArray[9] == 0 && length > 35); //zero is black
         Turnleft();
     }
 
@@ -1111,7 +1111,7 @@ void task6() {
     do{
       inversereadline();
       linefollow();
-    }while(sensorArray[0] == 0 && sensorArray[7] == 0); //zero is black
+    }while(sensorArray[0] == 0 && sensorArray[9] == 0); //zero is black
 
     //large box
     if(distance2 <= 10 && distance3 <= 10){
@@ -1125,7 +1125,7 @@ void task6() {
         float distance_left = (position_left / CPR) * CIRCUMFERENCE; // Distance in meters
         float distance_right = (position_right / CPR) * CIRCUMFERENCE; // Distance in meters
         float length = (distance_left + distance_right)/2;  //average value
-      }while(sensorArray[0] == 0 && sensorArray[7] == 0 && length > 15);
+      }while(sensorArray[0] == 0 && sensorArray[9] == 0 && length > 15);
     }
     //medium box
     if(distance2 > 10 && distance3 > 10){
@@ -1133,7 +1133,7 @@ void task6() {
         do{
           inversereadline();
           linefollow();
-          }while(sensorArray[0] == 0 && sensorArray[7] == 0); //zero is black
+          }while(sensorArray[0] == 0 && sensorArray[9] == 0); //zero is black
         Turnleft();
         Placerealbox();
         Turnleft();
@@ -1145,7 +1145,7 @@ void task6() {
           float distance_left = (position_left / CPR) * CIRCUMFERENCE; // Distance in meters
           float distance_right = (position_right / CPR) * CIRCUMFERENCE; // Distance in meters
           float length = (distance_left + distance_right)/2;  //average value
-        }while(sensorArray[0] == 0 && sensorArray[7] == 0 && length > 35); //zero is black
+        }while(sensorArray[0] == 0 && sensorArray[9] == 0 && length > 35); //zero is black
     }
     //small box
     if(distance2 > 10 && distance3 > 10){
@@ -1158,7 +1158,7 @@ void task6() {
         float distance_left = (position_left / CPR) * CIRCUMFERENCE; // Distance in meters
         float distance_right = (position_right / CPR) * CIRCUMFERENCE; // Distance in meters
         float length = (distance_left + distance_right)/2;  //average value
-      }while(sensorArray[0] == 0 && sensorArray[7] == 0 && length > 35); //zero is black
+      }while(sensorArray[0] == 0 && sensorArray[9] == 0 && length > 35); //zero is black
       Turnleft();
       Placerealbox();
       Turnleft();
@@ -1170,14 +1170,14 @@ void task6() {
         float distance_left = (position_left / CPR) * CIRCUMFERENCE; // Distance in meters
         float distance_right = (position_right / CPR) * CIRCUMFERENCE; // Distance in meters
         float length = (distance_left + distance_right)/2;  //average value
-      }while(sensorArray[0] == 0 && sensorArray[7] == 0 && length > 65);
+      }while(sensorArray[0] == 0 && sensorArray[9] == 0 && length > 65);
     }
   }
   if (linecolor == 2){ //2 is red
     do{
       inversereadline();
       linefollow();
-    }while(sensorArray[0] == 0 && sensorArray[7] == 0); //zero is black
+    }while(sensorArray[0] == 0 && sensorArray[9] == 0); //zero is black
     Turnleft();
 
 // 1st box
@@ -1194,7 +1194,7 @@ void task6() {
     do{
       inversereadline();
       linefollow();
-    }while(sensorArray[0] == 0 && sensorArray[7] == 0); //zero is black
+    }while(sensorArray[0] == 0 && sensorArray[9] == 0); //zero is black
     //small box
     if(distance2 > 10 && distance3 > 10){
       Turnleft();
@@ -1206,14 +1206,14 @@ void task6() {
         float distance_left = (position_left / CPR) * CIRCUMFERENCE; // Distance in meters
         float distance_right = (position_right / CPR) * CIRCUMFERENCE; // Distance in meters
         float length = (distance_left + distance_right)/2;  //average value
-      }while(sensorArray[0] == 0 && sensorArray[7] == 0 && length > 35); //zero is black
+      }while(sensorArray[0] == 0 && sensorArray[9] == 0 && length > 35); //zero is black
       Turnright();
       Placerealbox();
       Turnright();
       do{
       inversereadline();
       linefollow();
-      }while(sensorArray[0] == 0 && sensorArray[7] == 0); //zero is black
+      }while(sensorArray[0] == 0 && sensorArray[9] == 0); //zero is black
       Turnright();
     }
     //medium box
@@ -1222,7 +1222,7 @@ void task6() {
       do{
       inversereadline();
       linefollow();
-      }while(sensorArray[0] == 0 && sensorArray[7] == 0); //zero is black
+      }while(sensorArray[0] == 0 && sensorArray[9] == 0); //zero is black
       Turnright();
       Placerealbox();
       uTurn();
@@ -1235,7 +1235,7 @@ void task6() {
       do{
         inversereadline();
         linefollow();
-      }while(sensorArray[0] == 0 && sensorArray[7] == 0); //zero is black
+      }while(sensorArray[0] == 0 && sensorArray[9] == 0); //zero is black
       Turnleft();
     }
 
@@ -1253,7 +1253,7 @@ void task6() {
     do{
       inversereadline();
       linefollow();
-    }while(sensorArray[0] == 0 && sensorArray[7] == 0); //zero is black
+    }while(sensorArray[0] == 0 && sensorArray[9] == 0); //zero is black
 
     //small box
     if(distance2 > 10 && distance3 > 10){
@@ -1261,7 +1261,7 @@ void task6() {
       do{
       inversereadline();
       linefollow();
-      }while(sensorArray[0] == 0 && sensorArray[7] == 0); //zero is black
+      }while(sensorArray[0] == 0 && sensorArray[9] == 0); //zero is black
       Turnright();
       Placerealbox();
       uTurn();
@@ -1274,7 +1274,7 @@ void task6() {
         do{
           inversereadline();
           linefollow();
-        }while(sensorArray[0] == 0 && sensorArray[7] == 0); //zero is black
+        }while(sensorArray[0] == 0 && sensorArray[9] == 0); //zero is black
         Turnleft();
       }
     //large box
@@ -1283,7 +1283,7 @@ void task6() {
         do{
           inversereadline();
           linefollow();
-          }while(sensorArray[0] == 0 && sensorArray[7] == 0); //zero is black
+          }while(sensorArray[0] == 0 && sensorArray[9] == 0); //zero is black
         }Turnleft();
         Placerealbox();
         Turnleft();
@@ -1295,7 +1295,7 @@ void task6() {
           float distance_left = (position_left / CPR) * CIRCUMFERENCE; // Distance in meters
           float distance_right = (position_right / CPR) * CIRCUMFERENCE; // Distance in meters
           float length = (distance_left + distance_right)/2;  //average value
-        }while(sensorArray[0] == 0 && sensorArray[7] == 0 && length > 35); //zero is black
+        }while(sensorArray[0] == 0 && sensorArray[9] == 0 && length > 35); //zero is black
         Turnleft();
     }
 
@@ -1313,7 +1313,7 @@ void task6() {
     do{
       inversereadline();
       linefollow();
-    }while(sensorArray[0] == 0 && sensorArray[7] == 0); //zero is black
+    }while(sensorArray[0] == 0 && sensorArray[9] == 0); //zero is black
 
     //small box
     if(distance2 > 10 && distance3 > 10){
@@ -1327,7 +1327,7 @@ void task6() {
         float distance_left = (position_left / CPR) * CIRCUMFERENCE; // Distance in meters
         float distance_right = (position_right / CPR) * CIRCUMFERENCE; // Distance in meters
         float length = (distance_left + distance_right)/2;  //average value
-      }while(sensorArray[0] == 0 && sensorArray[7] == 0 && length > 15);
+      }while(sensorArray[0] == 0 && sensorArray[9] == 0 && length > 15);
     }
     //medium box
     if(distance2 > 10 && distance3 > 10){
@@ -1335,7 +1335,7 @@ void task6() {
         do{
           inversereadline();
           linefollow();
-          }while(sensorArray[0] == 0 && sensorArray[7] == 0); //zero is black
+          }while(sensorArray[0] == 0 && sensorArray[9] == 0); //zero is black
         Turnleft();
         Placerealbox();
         Turnleft();
@@ -1347,7 +1347,7 @@ void task6() {
           float distance_left = (position_left / CPR) * CIRCUMFERENCE; // Distance in meters
           float distance_right = (position_right / CPR) * CIRCUMFERENCE; // Distance in meters
           float length = (distance_left + distance_right)/2;  //average value
-        }while(sensorArray[0] == 0 && sensorArray[7] == 0 && length > 35); //zero is black
+        }while(sensorArray[0] == 0 && sensorArray[9] == 0 && length > 35); //zero is black
     }
     //small box
     if(distance2 <= 10 && distance3 <= 10){
@@ -1360,7 +1360,7 @@ void task6() {
         float distance_left = (position_left / CPR) * CIRCUMFERENCE; // Distance in meters
         float distance_right = (position_right / CPR) * CIRCUMFERENCE; // Distance in meters
         float length = (distance_left + distance_right)/2;  //average value
-      }while(sensorArray[0] == 0 && sensorArray[7] == 0 && length > 35); //zero is black
+      }while(sensorArray[0] == 0 && sensorArray[9] == 0 && length > 35); //zero is black
       Turnleft();
       Placerealbox();
       Turnleft();
@@ -1372,7 +1372,7 @@ void task6() {
         float distance_left = (position_left / CPR) * CIRCUMFERENCE; // Distance in meters
         float distance_right = (position_right / CPR) * CIRCUMFERENCE; // Distance in meters
         float length = (distance_left + distance_right)/2;  //average value
-      }while(sensorArray[0] == 0 && sensorArray[7] == 0 && length > 65);
+      }while(sensorArray[0] == 0 && sensorArray[9] == 0 && length > 65);
     }
 }
 
@@ -1399,7 +1399,7 @@ void task7(){
   //Hidden Task....................
 
 
-  
+
 }
 
 void task8(){
@@ -1428,7 +1428,7 @@ bool barcodeReadComplete() {
 
 bool colourLineDone() {
   int count = 0;
-  for (int i = 0; i < 8; i++) {
+  for (int i = 0; i < 10; i++) {
     if (sensorArray[i]){                     //check this condition for if because i didnt remembere output in ir array high or low for white surface
       count++;
     }
@@ -1448,7 +1448,7 @@ bool someOtherTaskComplete() {
 
 //calibrate the IR Array
 void calibrate() {
-  for (int i = 0; i < 8; i++) {
+  for (int i = 0; i < 10; i++) {
     minValues[i] = analogRead(i);
     maxValues[i] = analogRead(i);
   }
@@ -1457,7 +1457,7 @@ void calibrate() {
     motor1run(100);
     motor2run(-100);
 
-    for (int i = 0; i < 8; i++) {
+    for (int i = 0; i < 10; i++) {
       if (analogRead(i) < minValues[i]) {
         minValues[i] = analogRead(i);
       }
@@ -1467,7 +1467,7 @@ void calibrate() {
     }
   }
 
-  for (int i = 0; i < 8; i++) {
+  for (int i = 0; i < 10; i++) {
     threshold[i] = (minValues[i] + maxValues[i]) / 2;
     Serial.print(threshold[i]);
     Serial.print(" ");
@@ -1482,8 +1482,8 @@ void calibrate() {
 //Read the IR values in each and every loop
 void readLine() {
   onLine = 0;
-  if (numSensors == 8) {
-    for (int i = 0; i < 8; i++) {
+  if (numSensors == 10) {
+    for (int i = 0; i < 10; i++) {
       if (isBlackLine) {
         sensorValue[i] = map(analogRead(i), minValues[i], maxValues[i], 0, 1000);
       } else {
@@ -1504,8 +1504,8 @@ void linefollow() {
   error = 0;
   activeSensors = 0;
 
-  if (numSensors == 8) {
-    for (int i = 0; i < 8; i++) {
+  if (numSensors == 10) {
+    for (int i = 0; i < 10; i++) {
       error += sensorWeight[i] * sensorArray[i];
       activeSensors += sensorArray[i];
     }
@@ -1703,7 +1703,7 @@ int Junction(){
   if (sensorArray[0] == 0 && sensorArray[1] == 0){          //left
     return 1;
   }
-  else if(sensorArray[6] == 0 && sensorArray[7] == 0){      //right
+  else if(sensorArray[8] == 0 && sensorArray[9] == 0){      //right
     return 2;                                                 
   }
   else{
@@ -1717,7 +1717,7 @@ int openWall(){
   do{
       readLine();
       linefollow(); 
-    }while(sensorArray[6] == 1 && sensorArray[7] == 1);
+    }while(sensorArray[8] == 1 && sensorArray[9] == 1);
     
     motor2run(0);
     motor1run(0);
@@ -1727,7 +1727,7 @@ int openWall(){
     do{
       readLine();
       linefollow(); 
-    }while(sensorArray[6] == 1 && sensorArray[7] == 1);
+    }while(sensorArray[8] == 1 && sensorArray[9] == 1);
 
     motor2run(0);
     motor1run(0);
@@ -1738,7 +1738,7 @@ int openWall(){
     do{
       readLine();
       linefollow(); 
-    }while(sensorArray[6] == 1 && sensorArray[7] == 1);
+    }while(sensorArray[8] == 1 && sensorArray[9] == 1);
     
     motor2run(0);
     motor1run(0); 
@@ -1763,7 +1763,7 @@ int openWall(){
     do{
       readLine();
       linefollow(); 
-    }while(sensorArray[0] == 1 && sensorArray[1] == 1||sensorArray[6] == 1 && sensorArray[7] == 1);
+    }while(sensorArray[0] == 1 && sensorArray[1] == 1||sensorArray[8] == 1 && sensorArray[9] == 1);
 
     motor2run(0);
     motor1run(0);
@@ -1780,7 +1780,7 @@ int openWall(){
     do{
       readLine();
       linefollow(); 
-    }while(sensorArray[6] == 1 && sensorArray[7] == 1);
+    }while(sensorArray[8] == 1 && sensorArray[9] == 1);
   }
 
     motor2run(0);
@@ -1790,7 +1790,7 @@ int openWall(){
     do{
       readLine();
       linefollow(); 
-    }while(sensorArray[6] == 1 && sensorArray[7] == 1);
+    }while(sensorArray[8] == 1 && sensorArray[9] == 1);
 
     motor2run(0);
     motor1run(0);
@@ -1800,7 +1800,7 @@ int openWall(){
     do{
       readLine();
       linefollow(); 
-    }while(sensorArray[0] == 1 && sensorArray[1] == 1||sensorArray[6] == 1 && sensorArray[7] == 1);
+    }while(sensorArray[0] == 1 && sensorArray[1] == 1||sensorArray[8] == 1 && sensorArray[9] == 1);
 
     motor2run(0);
     motor1run(0);
@@ -1840,7 +1840,7 @@ void moveBack(){
   do{
     readLine();
     synchronizeMotorSpeeds(0);
-  }while(sensorArray[0] == 1 && sensorArray[1] == 1||sensorArray[6] == 1 && sensorArray[7] == 1);
+  }while(sensorArray[0] == 1 && sensorArray[1] == 1||sensorArray[8] == 1 && sensorArray[9] == 1);
   
   motor2run(0);
   motor1run(0);  
@@ -1920,8 +1920,8 @@ void Placerealbox(){
 void inversereadline(){
 //readline check the conditions and change to read black line for error correction
   onLine = 1;
-  if (numSensors == 8) {
-    for (int i = 0; i < 8; i++) {
+  if (numSensors == 10) {
+    for (int i = 0; i < 10; i++) {
       if (isBlackLine) {
         sensorValue[i] = map(analogRead(i), minValues[i], maxValues[i], 0, 1000);
       } else {
@@ -1942,7 +1942,7 @@ void movebackinverse(){
   do{
     inversereadline();
     synchronizeMotorSpeeds(0);
-  }while(sensorArray[0] == 1 && sensorArray[1] == 1||sensorArray[6] == 1 && sensorArray[7] == 1);
+  }while(sensorArray[0] == 1 && sensorArray[1] == 1||sensorArray[8] == 1 && sensorArray[9] == 1);
   
   motor2run(0);
   motor1run(0);
