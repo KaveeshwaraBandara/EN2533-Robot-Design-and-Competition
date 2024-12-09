@@ -914,14 +914,10 @@ void task3() {
 
 // Task 4: Dotted line following
 void task4() {
-  readLine();
-  int count = 0;
-  for (int i = 0; i < 8; i++) {
-    if (sensorArray[i]){                     //check this condition for if because i didnt remembere output in ir array high or low for white surface
-      count++;
-    }
-  }
+  int count;
  //if all black we need to move foward until we found white dashed line  
+  while(true){
+  count = sensorCount();
   if(count==0){
     synchronizeMotorSpeeds(1);
   }
@@ -931,11 +927,46 @@ void task4() {
 
   //condition for state transition
   if(count>6){
+    motor2run(0);
+    motor1run(0);
     currentState = STATE_TASK5;
+    break;
+  }
   }
 }
 
-void task5() {
+// Task 5: Portal Navigation
+void task5(){
+  if(gateDetected()){
+    do{
+      motor2run(0);
+      motor1run(0);
+    }while(gateDetected());
+    do{
+      synchronizeMotorSpeeds(1);
+    }while(sensorArray[0] == 1 && sensorArray[1] == 1||sensorArray[6] == 1 && sensorArray[7] == 1);
+    currentState = STATE_TASK6;
+    motor2run(0);
+    motor1run(0);
+  }
+  else{
+    do{
+      motor2run(0);
+      motor1run(0);
+    }while(!gateDetected());
+    do{
+      motor2run(0);
+      motor1run(0);
+    }while(gateDetected());
+
+    do{
+      synchronizeMotorSpeeds(1);
+    }while(sensorArray[0] == 1 && sensorArray[1] == 1||sensorArray[6] == 1 && sensorArray[7] == 1);
+    currentState = STATE_TASK6;
+    
+    motor2run(0);
+    motor1run(0);
+  }
 }
 
 void task6() {
@@ -1785,6 +1816,7 @@ int detectWall(){
 //move backward until met a 4 way junction
 void moveBack(){
   do{
+    readLine();
     synchronizeMotorSpeeds(0);
   }while(sensorArray[0] == 1 && sensorArray[1] == 1||sensorArray[6] == 1 && sensorArray[7] == 1);
   
@@ -1827,6 +1859,7 @@ void moveBackColour(){
 //this is for move back in maze above line(move back until met a junction)
 void  moveBackAbove(){
   do{
+    readLine();
     synchronizeMotorSpeeds(0);
   }while(sensorArray[0] == 1 && sensorArray[1] == 1);
   
@@ -1884,14 +1917,20 @@ void inversereadline(){
 
 //move back in black line with syncrhonization
 void movebackinverse(){
-
+  do{
+    inversereadline();
+    synchronizeMotorSpeeds(0);
+  }while(sensorArray[0] == 1 && sensorArray[1] == 1||sensorArray[6] == 1 && sensorArray[7] == 1);
+  
+  motor2run(0);
+  motor1run(0);
 }
 
 void Dropbox(){
 //drop the box for place the box using servo
 }
 
-int Tof1read(){
+int Tof1read(){     //this is for detect the gate  return value is distance
 
 }
 
@@ -1919,4 +1958,30 @@ int getBluePW() {
   int PW;
   PW = pulseIn(sensorOut, LOW);
   return PW;
+}
+
+//detect gate closed or open (open retuns false.. close returns true)
+bool gateDetected(){
+  int distance;
+  do{
+    distance = Tof1read();
+    if(distance < 0.25){      //assume that tof output is in meters(condition for distance less than 25cm)
+      return true;
+    }
+    else{
+      return false;
+    }   
+  }
+}
+
+//count the number of sensors detect white surface
+int sensorCount(){
+  readLine();
+  int count = 0;
+  for (int i = 0; i < 8; i++) {
+    if (sensorArray[i]){                     //check this condition for if because i didnt remembere output in ir array high or low for white surface
+      count++;
+    }
+  }
+  return count;
 }
