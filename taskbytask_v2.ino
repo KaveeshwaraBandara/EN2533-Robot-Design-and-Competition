@@ -1377,10 +1377,32 @@ void task6() {
 }
 
 
-void task7() {
+void task7(){
+  Turnleft();
+  do{
+    inversereadline();
+    linefollow();
+  }while(sensorArray[0] == 1 && sensorArray[1] == 1);
+
+  motor2run(0);
+  motor1run(0);
+
+  Turnleft();
+  //move until found the box and pick and move back until met the junction
+  //......
+
+  motor2run(0);
+  motor1run(0);
+
+  Turnright();
+
+  //Hidden Task....................
+
+
+  
 }
 
-void task8() {
+void task8(){
 }
 
 
