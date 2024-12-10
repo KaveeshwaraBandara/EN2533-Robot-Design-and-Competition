@@ -243,7 +243,7 @@ void task1() {
   display.display(); 
   motor1run(70);
   motor2run(70);
- //synchronize motors 
+  
   
   readLine();
   int count = 0;
@@ -273,7 +273,7 @@ void task1() {
 
   
   //Transition to Task 2 after barcode is read
-  if (barcodeReadComplete()) {   //check if this one not work properly write a new condition like found 3 cm width white line
+  if (barcodeReadComplete()) {
     currentState = STATE_TASK2; 
   }
 }
@@ -284,13 +284,12 @@ void task2() {
   int wall = openWall();                            //first wall = 0 second wall = 1
   if(vBoxPosition == 0){
     uTurn();
-    //Turnright();
+    Turnright();
     
     do{
       readLine();
       linefollow(); 
-    }while(sensorArray[0] == 1 && sensorArray[1] == 1);
-
+    }while(sensorArray[8] == 1 && sensorArray[9] == 1); 
     motor2run(0);
     motor1run(0);
 
@@ -298,56 +297,16 @@ void task2() {
 
     if(wall == 0){
       moveBack();
-      placeBox();
-
-      moveBack();
-      Turnleft();
-
-      do{
-      readLine();
-      linefollow(); 
-    }while(sensorArray[0] == 1 && sensorArray[1] == 1 && sensorArray[8] == 1 && sensorArray[9] == 1);
-
-    motor2run(0);
-    motor1run(0);
-
-    Turnright();
-
-    do{
-      readLine();
-      linefollow(); 
-    }while(sensorArray[8] == 1 && sensorArray[9] == 1);
-
-    do{
-      readLine();
-      linefollow(); 
-    }while(sensorArray[8] == 1 && sensorArray[9] == 1);
-
-    motor2run(0);
-    motor1run(0);
-
-    Turnright();
-
-    do{
-      readLine();
-      linefollow(); 
-    }while(sensorArray[0] == 1 && sensorArray[1] == 1 && sensorArray[8] == 1 && sensorArray[9] == 1);
-
-    motor2run(0);
-    motor1run(0);
-
-    pickBox();
+      Turnright();      
+    
 
     do{
       readLine();
       linefollow(); 
       int colr = detectcolour(); 
-    }while(colr == 0);
+    }while(colr == 1 || colr == 2);
     linecolor = colr;
 
-    motor2run(0);
-    motor1run(0);
-    
     placeBox();
     placed = 1;
     }
@@ -356,7 +315,6 @@ void task2() {
     else if(wall == 1){
       moveBack();
       moveBack();
-      placeBox();
       Turnright();
 
       do{
@@ -1758,7 +1716,7 @@ int Junction(){
   }
 }
 
-//detect the open wall firstone(0) or secondone(1)      8,9 - right  0,1 - left
+//detect the open wall firstone(0) or secondone(1)      6,7 - right  0,1 - left
 int openWall(){
   //move to the maze from barcode 
   do{
@@ -1791,31 +1749,19 @@ int openWall(){
     motor1run(0); 
     
     placeBox();
+    uTurn();
     
     do{
-      synchronizeMotorSpeeds(0);
-    }while(sensorArray[8] == 1 && sensorArray[9] == 1);
-
-    motor2run(0);
-    motor1run(0);
+      readLine();
+      linefollow(); 
+    }while(sensorArray[0] == 1 && sensorArray[1] == 1);
     
-    // do{
-    //   readLine();
-    //   linefollow(); 
-    // }while(sensorArray[0] == 1 && sensorArray[1] == 1);
-    
-    // motor2run(0);
-    // motor1run(0); 
-
-    Turnright();
+    Turnleft();
 
     do{
       readLine();
       linefollow(); 
     }while(sensorArray[0] == 1 && sensorArray[1] == 1);
-
-    motor2run(0);
-    motor1run(0); 
 
     Turnleft();
 
@@ -1827,8 +1773,6 @@ int openWall(){
     motor2run(0);
     motor1run(0);
 
-    Turnright();
-
     if(detectWall()){
       return 0;
     }
@@ -1838,15 +1782,15 @@ int openWall(){
 
   }
   else{
-  //   do{
-  //     readLine();
-  //     linefollow(); 
-  //   }while(sensorArray[8] == 1 && sensorArray[9] == 1);
-  // }
+    do{
+      readLine();
+      linefollow(); 
+    }while(sensorArray[8] == 1 && sensorArray[9] == 1);
+  }
 
-  //   motor2run(0);
-  //   motor1run(0);
-  //   Turnright();
+    motor2run(0);
+    motor1run(0);
+    Turnright();
   //check if there is a need for move little bit above from junction.. here actually what we do is we avoid the first junction and move foward
     do{
       readLine();
@@ -1866,7 +1810,7 @@ int openWall(){
     motor2run(0);
     motor1run(0);
 
-    // Turnleft();
+    Turnleft();
 
     if(detectWall()){
       return 0;
@@ -2086,67 +2030,4 @@ int sensorCount(){
     }
   }
   return count;
-}
-
-void moveForVB0(){
-    int colr;
-    placeBox();
-    while(true){
-      synchronizeMotorSpeeds(0);
-      if(sensorArray[0]==1 && sensorArray[1]==1){
-        break;
-      }
-    }
-
-  motor2run(0);
-  motor1run(0);
-
-    Turnleft();
-
-    while(true){
-      readLine();
-      linefollow();
-      if(sensorArray[0]==1 && sensorArray[1]==1 && sensorArray[8]==1 && sensorArray[9]==1){
-        break;
-      }
-    }
-
-    motor2run(0);
-    motor1run(0);
-    
-    Turnright();
-    
-    while(true){
-      readLine();
-      linefollow();
-      if(sensorArray[8]==1 && sensorArray[9]==1){
-        break;
-      }
-    }
-
-    motor2run(0);
-    motor1run(0);
-
-    Turnright();
-
-    while(true){
-      readLine();
-      linefollow();
-      if(sensorArray[0]==1 && sensorArray[1]==1 && sensorArray[8]==1 && sensorArray[9]==1){
-        break;
-      }
-    }
-
-    pickBox();
-    
-    while(true){
-      colr = detectcolour();
-      readLine();
-      linefollow();
-      if(colr == 1 || colr == 2){
-        break;
-      }
-    }
-    placeBox();
-    placed = 1;
 }
