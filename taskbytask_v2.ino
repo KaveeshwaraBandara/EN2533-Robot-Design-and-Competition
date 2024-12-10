@@ -34,7 +34,7 @@ double error = 0.00;
 int lsp, rsp;
 int lfSpeed = 70;
 int currentSpeed = 30;
-int sensorWeight[8] = {5, 4, 2, 1, 0, 0, -1, -2, -4, -5};
+int sensorWeight[10] = {5, 4, 2, 1, 0, 0, -1, -2, -4, -5};
 int activeSensors;
 float Kp = 0.007;
 float Kd = 0.005;
@@ -112,6 +112,11 @@ int distance1 = 0;
 int distance2 = 0;
 int distance3 = 0;
 
+//ultrasonic
+const int trig_pin = 4;
+const int echo_pin = 5;
+float timing = 0.0;
+float distance = 0.0;
 
 // Interrupt Service Routine for Channel A
 void ISR_LEFT_A() {
@@ -243,7 +248,7 @@ void task1() {
   readLine();
   int count = 0;
   for (int i = 0; i < 10; i++) {
-    if (sensorArray[i]){                     //check this condition for if because i didnt remembere output in ir array high or low for white surface
+    if (sensorArray[i]){                     //check this condition for if because i didn't remembere output in ir array high or low for white surface
       count++;
     }
   }
@@ -1830,9 +1835,30 @@ void uTurn(){
 
 }
 
-//detect the obstacle using tof return 1 when open and return 0 when close
+//detect the obstacle using ultrasonic return 1 when open and return 0 when close
 int detectWall(){
-
+  digitalWrite(trig_pin, LOW);
+  delay(2);
+  
+  digitalWrite(trig_pin, HIGH);
+  delay(10);
+  digitalWrite(trig_pin, LOW);
+  
+  timing = pulseIn(echo_pin, HIGH);
+  distance = (timing * 0.034) / 2;
+  
+  // Serial.print("Distance: ");
+  // Serial.print(distance);
+  // Serial.print("cm | ");
+  // Serial.print(distance / 2.54);
+  // Serial.println("in");
+  
+    
+  if (distance <= 15){
+  	return 0;
+  } else {
+  	return 1;
+  }
 }
 
 //move backward until met a 4 way junction
