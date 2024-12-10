@@ -285,11 +285,15 @@ void task2() {
   if(vBoxPosition == 0){
     uTurn();
     Turnright();
-    
-    do{
+
+    while(true){
       readLine();
-      linefollow(); 
-    }while(sensorArray[8] == 1 && sensorArray[9] == 1); 
+      if(sensorArray[8] == 1 && sensorArray[9] == 1){
+        break;
+      }
+      linefollow();
+    }
+
     motor2run(0);
     motor1run(0);
 
@@ -299,12 +303,17 @@ void task2() {
       moveBack();
       Turnright();      
     
-
-    do{
+    while(true){
       readLine();
-      linefollow(); 
-      int colr = detectcolour(); 
-    }while(colr == 1 || colr == 2);
+      int colr = detectcolour();
+      if(colr == 1 || colr == 2){
+        break;
+      }
+      linefollow();
+    }
+    motor2run(0);
+    motor1run(0);
+
     linecolor = colr;
 
     placeBox();
@@ -335,15 +344,22 @@ void task2() {
   else if(vBoxPosition == 1){
     if(wall == 0){
       uTurn();
-      do{
+
+      while(true){
         readLine();
-        linefollow(); 
-      }while(sensorArray[0] == 1 && sensorArray[1] == 1||sensorArray[8] == 1 && sensorArray[9] == 1);
+        if(sensorArray[0] == 1 && sensorArray[1] == 1 && sensorArray[8] == 1 && sensorArray[9] == 1){
+          break;
+        }
+        linefollow();
+      }
       //check if theres need for little bit move above for avoiding unnecessary turns
-      do{
+      while(true){
         readLine();
-        linefollow(); 
-      }while(sensorArray[0] == 1 && sensorArray[1] == 1||sensorArray[8] == 1 && sensorArray[9] == 1);
+        if(sensorArray[0] == 1 && sensorArray[1] == 1 && sensorArray[8] == 1 && sensorArray[9] == 1){
+          break;
+        }
+        linefollow();
+      }
       
       motor2run(0);
       motor1run(0);
@@ -359,45 +375,60 @@ void task2() {
       uTurn();
       Turnright();
 
-      do{
+      while(true){
         readLine();
-        linefollow(); 
-      }while(sensorArray[0] == 1 && sensorArray[1] == 1);
+        if(sensorArray[0] == 1 && sensorArray[1] == 1){
+          break;
+        }
+        linefollow();
+      }
 
       motor2run(0);
       motor1run(0);
 
       Turnleft();
 
-      do{
+      while(true){
         readLine();
-        linefollow(); 
-      }while(sensorArray[0] == 1 && sensorArray[1] == 1);
+        if(sensorArray[0] == 1 && sensorArray[1] == 1){
+          break;
+        }
+        linefollow();
+      }
 
       motor2run(0);
       motor1run(0);
 
       Turnleft();
 
-      do{
+      while(true){
         readLine();
-        linefollow(); 
-      }while(sensorArray[0] == 1 && sensorArray[1] == 1);
+        if(sensorArray[0] == 1 && sensorArray[1] == 1){
+          break;
+        }
+        linefollow();
+      }
 
       motor2run(0);
       motor1run(0);
 
       pickBox();
 
-      do{
+      while(true){
         readLine();
-        linefollow(); 
-      }while(sensorArray[0] == 1 && sensorArray[1] == 1);
+        if(sensorArray[0] == 1 && sensorArray[1] == 1){
+          break;
+        }
+        linefollow();
+      }
 
-      do{
+      while(true){
         readLine();
-        linefollow(); 
-      }while(sensorArray[0] == 1 && sensorArray[1] == 1);
+        if(sensorArray[0] == 1 && sensorArray[1] == 1){
+          break;
+        }
+        linefollow();
+      }
 
       motor2run(0);
       motor1run(0);
@@ -406,50 +437,65 @@ void task2() {
 
       uTurn();
 
-      do{
+      while(true){
         readLine();
-        linefollow(); 
-      }while(sensorArray[8] == 1 && sensorArray[9] == 1);
+        if(sensorArray[8] == 1 && sensorArray[9] == 1){
+          break;
+        }
+        linefollow();
+      }
 
       motor2run(0);
       motor1run(0);
 
       Turnright();
 
-      do{
+      while(true){
         readLine();
-        linefollow(); 
-      }while(sensorArray[0] == 1 && sensorArray[1] == 1||sensorArray[8] == 1 && sensorArray[9] == 1);
+        if(sensorArray[0] == 1 && sensorArray[1] == 1 && sensorArray[8] == 1 && sensorArray[9] == 1){
+          break;
+        }
+        linefollow();
+      }
 
       motor2run(0);
       motor1run(0);
 
       Turnright();
 
-      do{
+      while(true){
         readLine();
-        linefollow(); 
-      }while(sensorArray[0] == 1 && sensorArray[1] == 1||sensorArray[8] == 1 && sensorArray[9] == 1);
+        if(sensorArray[0] == 1 && sensorArray[1] == 1 && sensorArray[8] == 1 && sensorArray[9] == 1){
+          break;
+        }
+        linefollow();
+      }
 
       motor2run(0);
       motor1run(0);
 
       Turnright();
 
-      do{
+      while(true){
         readLine();
-        linefollow(); 
-      }while(sensorArray[0] == 1 && sensorArray[1] == 1||sensorArray[8] == 1 && sensorArray[9] == 1);
+        if(sensorArray[0] == 1 && sensorArray[1] == 1 && sensorArray[8] == 1 && sensorArray[9] == 1){
+          break;
+        }
+        linefollow();
+      }
 
       motor2run(0);
       motor1run(0);
 
       Turnright();
 
-      do{
+      while(true){
         readLine();
-        linefollow(); 
-      }while(sensorArray[0] == 1 && sensorArray[1] == 1||sensorArray[8] == 1 && sensorArray[9] == 1);
+        if(sensorArray[0] == 1 && sensorArray[1] == 1 && sensorArray[8] == 1 && sensorArray[9] == 1){
+          break;
+        }
+        linefollow();
+      }
 
       motor2run(0);
       motor1run(0);
@@ -467,25 +513,34 @@ void task2() {
     if(wall == 0){
       uTurn();
       
-      do{
+      while(true){
         readLine();
-        linefollow(); 
-      }while(sensorArray[0] == 1 && sensorArray[1] == 1||sensorArray[8] == 1 && sensorArray[9] == 1);
+        if(sensorArray[0] == 1 && sensorArray[1] == 1 && sensorArray[8] == 1 && sensorArray[9] == 1){
+          break;
+        }
+        linefollow();
+      }
+      while(true){
+        readLine();
+        if(sensorArray[0] == 1 && sensorArray[1] == 1 && sensorArray[8] == 1 && sensorArray[9] == 1){
+          break;
+        }
+        linefollow();
+      }
 
-      do{
-        readLine();
-        linefollow(); 
-      }while(sensorArray[0] == 1 && sensorArray[1] == 1||sensorArray[8] == 1 && sensorArray[9] == 1);
 
       motor2run(0);
       motor1run(0);
 
       Turnleft();
 
-      do{
+      while(true){
         readLine();
-        linefollow(); 
-      }while(sensorArray[0] == 1 && sensorArray[1] == 1);
+        if(sensorArray[0] == 1 && sensorArray[1] == 1){
+          break;
+        }
+        linefollow();
+      }
 
       motor2run(0);
       motor1run(0);
@@ -500,30 +555,39 @@ void task2() {
 
       Turnleft();
 
-      do{
+      while(true){
         readLine();
-        linefollow(); 
-      }while(sensorArray[8] == 1 && sensorArray[9] == 1);
+        if(sensorArray[8] == 1 && sensorArray[9] == 1){
+          break;
+        }
+        linefollow();
+      }
 
       motor2run(0);
       motor1run(0);
 
       Turnright();
 
-      do{
+      while(true){
         readLine();
-        linefollow(); 
-      }while(sensorArray[0] == 1 && sensorArray[1] == 1||sensorArray[8] == 1 && sensorArray[9] == 1);
+        if(sensorArray[0] == 1 && sensorArray[1] == 1 && sensorArray[8] == 1 && sensorArray[9] == 1){
+          break;
+        }
+        linefollow();
+      }
 
       motor2run(0);
       motor1run(0);
 
       Turnright();
 
-      do{
+      while(true){
         readLine();
-        linefollow(); 
-      }while(sensorArray[0] == 1 && sensorArray[1] == 1||sensorArray[8] == 1 && sensorArray[9] == 1);
+        if(sensorArray[0] == 1 && sensorArray[1] == 1 && sensorArray[8] == 1 && sensorArray[9] == 1){
+          break;
+        }
+        linefollow();
+      }
 
       motor2run(0);
       motor1run(0);
@@ -539,35 +603,47 @@ void task2() {
     else{
       uTurn();
       
-      do{
+      while(true){
         readLine();
-        linefollow(); 
-      }while(sensorArray[0] == 1 && sensorArray[1] == 1||sensorArray[8] == 1 && sensorArray[9] == 1);
+        if(sensorArray[0] == 1 && sensorArray[1] == 1 && sensorArray[8] == 1 && sensorArray[9] == 1){
+          break;
+        }
+        linefollow();
+      }
 
-      do{
+      while(true){
         readLine();
-        linefollow(); 
-      }while(sensorArray[0] == 1 && sensorArray[1] == 1||sensorArray[8] == 1 && sensorArray[9] == 1);
+        if(sensorArray[0] == 1 && sensorArray[1] == 1 && sensorArray[8] == 1 && sensorArray[9] == 1){
+          break;
+        }
+        linefollow();
+      }
 
       motor2run(0);
       motor1run(0);
 
       Turnleft();
 
-      do{
+      while(true){
         readLine();
-        linefollow(); 
-      }while(sensorArray[0] == 1 && sensorArray[1] == 1);
+        if(sensorArray[0] == 1 && sensorArray[1] == 1){
+          break;
+        }
+        linefollow();
+      }
 
       motor2run(0);
       motor1run(0);
 
       pickBox();
 
-      do{
+      while(true){
         readLine();
-        linefollow(); 
-      }while(sensorArray[0] == 1 && sensorArray[1] == 1);
+        if(sensorArray[0] == 1 && sensorArray[1] == 1){
+          break;
+        }
+        linefollow();
+      }
 
       motor2run(0);
       motor1run(0);
@@ -577,30 +653,39 @@ void task2() {
       moveBackAbove();
       Turnleft();
 
-      do{
+      while(true){
         readLine();
-        linefollow(); 
-      }while(sensorArray[0] == 1 && sensorArray[1] == 1||sensorArray[8] == 1 && sensorArray[9] == 1);
+        if(sensorArray[0] == 1 && sensorArray[1] == 1 && sensorArray[8] == 1 && sensorArray[9] == 1){
+          break;
+        }
+        linefollow();
+      }
 
       motor2run(0);
       motor1run(0);
 
       Turnright();
 
-      do{
+      while(true){
         readLine();
-        linefollow(); 
-      }while(sensorArray[0] == 1 && sensorArray[1] == 1||sensorArray[8] == 1 && sensorArray[9] == 1);
+        if(sensorArray[0] == 1 && sensorArray[1] == 1 && sensorArray[8] == 1 && sensorArray[9] == 1){
+          break;
+        }
+        linefollow();
+      }
 
       motor2run(0);
       motor1run(0);
 
-      Turnright();  
+      Turnright(); 
 
-      do{
+      while(true){
         readLine();
-        linefollow(); 
-      }while(sensorArray[0] == 1 && sensorArray[1] == 1||sensorArray[8] == 1 && sensorArray[9] == 1);
+        if(sensorArray[0] == 1 && sensorArray[1] == 1 && sensorArray[8] == 1 && sensorArray[9] == 1){
+          break;
+        }
+        linefollow();
+      } 
 
       motor2run(0);
       motor1run(0);
@@ -617,11 +702,14 @@ void task2() {
   else if(vBoxPosition == 3){
     if(wall == 0){
       uTurn();
-      
-      do{
+
+      while(true){
         readLine();
-        linefollow(); 
-      }while(sensorArray[0] == 1 && sensorArray[1] == 1||sensorArray[8] == 1 && sensorArray[9] == 1);
+        if(sensorArray[0] == 1 && sensorArray[1] == 1 && sensorArray[8] == 1 && sensorArray[9] == 1){
+          break;
+        }
+        linefollow();
+      }
 
       // do{
       //   readLine();
@@ -633,15 +721,21 @@ void task2() {
 
       Turnleft();
 
-      do{
+      while(true){
         readLine();
-        linefollow(); 
-      }while(sensorArray[0] == 1 && sensorArray[1] == 1);
+        if(sensorArray[0] == 1 && sensorArray[1] == 1){
+          break;
+        }
+        linefollow();
+      }
 
-      do{
+      while(true){
         readLine();
-        linefollow(); 
-      }while(sensorArray[0] == 1 && sensorArray[1] == 1);
+        if(sensorArray[0] == 1 && sensorArray[1] == 1){
+          break;
+        }
+        linefollow();
+      }
 
       motor2run(0);
       motor1run(0);
@@ -657,30 +751,39 @@ void task2() {
 
       Turnleft();
 
-      do{
+      while(true){
         readLine();
-        linefollow(); 
-      }while(sensorArray[8] == 1 && sensorArray[9] == 1);
+        if(sensorArray[8] == 1 && sensorArray[9] == 1){
+          break;
+        }
+        linefollow();
+      }
 
       motor2run(0);
       motor1run(0);
 
       Turnright();
 
-      do{
+      while(true){
         readLine();
-        linefollow(); 
-      }while(sensorArray[0] == 1 && sensorArray[1] == 1||sensorArray[8] == 1 && sensorArray[9] == 1);
+        if(sensorArray[0] == 1 && sensorArray[1] == 1 && sensorArray[8] == 1 && sensorArray[9] == 1){
+          break;
+        }
+        linefollow();
+      }
 
       motor2run(0);
       motor1run(0);
 
       Turnright();
 
-      do{
+      while(true){
         readLine();
-        linefollow(); 
-      }while(sensorArray[0] == 1 && sensorArray[1] == 1||sensorArray[8] == 1 && sensorArray[9] == 1);
+        if(sensorArray[0] == 1 && sensorArray[1] == 1 && sensorArray[8] == 1 && sensorArray[9] == 1){
+          break;
+        }
+        linefollow();
+      }
 
       motor2run(0);
       motor1run(0);
@@ -696,20 +799,26 @@ void task2() {
       uTurn();
       Turnleft();
 
-      do{
+      while(true){
         readLine();
-        linefollow(); 
-      }while(sensorArray[0] == 1 && sensorArray[1] == 1||sensorArray[8] == 1 && sensorArray[9] == 1);
+        if(sensorArray[0] == 1 && sensorArray[1] == 1 && sensorArray[8] == 1 && sensorArray[9] == 1){
+          break;
+        }
+        linefollow();
+      }
 
       motor2run(0);
       motor1run(0);
 
       Turnright();
 
-      do{
+      while(true){
         readLine();
-        linefollow(); 
-      }while(sensorArray[0] == 1 && sensorArray[1] == 1||sensorArray[8] == 1 && sensorArray[9] == 1);
+        if(sensorArray[0] == 1 && sensorArray[1] == 1 && sensorArray[8] == 1 && sensorArray[9] == 1){
+          break;
+        }
+        linefollow();
+      }
 
       motor2run(0);
       motor1run(0);
@@ -727,11 +836,14 @@ void task2() {
   else if(vBoxPosition == 4){
     if(wall == 0){
       uTurn();
-      
-      do{
+
+      while(true){
         readLine();
-        linefollow(); 
-      }while(sensorArray[0] == 1 && sensorArray[1] == 1||sensorArray[8] == 1 && sensorArray[9] == 1);
+        if(sensorArray[0] == 1 && sensorArray[1] == 1 && sensorArray[8] == 1 && sensorArray[9] == 1){
+          break;
+        }
+        linefollow();
+      }
 
       // do{
       //   readLine();
@@ -743,20 +855,29 @@ void task2() {
 
       Turnleft();
 
-      do{
+      while(true){
         readLine();
-        linefollow(); 
-      }while(sensorArray[0] == 1 && sensorArray[1] == 1);
+        if(sensorArray[0] == 1 && sensorArray[1] == 1){
+          break;
+        }
+        linefollow();
+      }
 
-      do{
+      while(true){
         readLine();
-        linefollow(); 
-      }while(sensorArray[0] == 1 && sensorArray[1] == 1);
+        if(sensorArray[0] == 1 && sensorArray[1] == 1){
+          break;
+        }
+        linefollow();
+      }
 
-      do{
+      while(true){
         readLine();
-        linefollow(); 
-      }while(sensorArray[0] == 1 && sensorArray[1] == 1);
+        if(sensorArray[0] == 1 && sensorArray[1] == 1){
+          break;
+        }
+        linefollow();
+      }
 
       motor2run(0);
       motor1run(0);
@@ -773,30 +894,39 @@ void task2() {
 
       Turnleft();
 
-      do{
+      while(true){
         readLine();
-        linefollow(); 
-      }while(sensorArray[8] == 1 && sensorArray[9] == 1);
+        if(sensorArray[8] == 1 && sensorArray[9] == 1){
+          break;
+        }
+        linefollow();
+      }
 
       motor2run(0);
       motor1run(0);
 
       Turnright();
 
-      do{
+      while(true){
         readLine();
-        linefollow(); 
-      }while(sensorArray[0] == 1 && sensorArray[1] == 1||sensorArray[8] == 1 && sensorArray[9] == 1);
+        if(sensorArray[0] == 1 && sensorArray[1] == 1 && sensorArray[8] == 1 && sensorArray[9] == 1){
+          break;
+        }
+        linefollow();
+      }
 
       motor2run(0);
       motor1run(0);
 
       Turnright();
 
-      do{
+      while(true){
         readLine();
-        linefollow(); 
-      }while(sensorArray[0] == 1 && sensorArray[1] == 1||sensorArray[8] == 1 && sensorArray[9] == 1);
+        if(sensorArray[0] == 1 && sensorArray[1] == 1 && sensorArray[8] == 1 && sensorArray[9] == 1){
+          break;
+        }
+        linefollow();
+      }
 
       motor2run(0);
       motor1run(0);
@@ -810,11 +940,14 @@ void task2() {
     }
     else{
       uTurn();
-      
-      do{
+
+      while(true){
         readLine();
-        linefollow(); 
-      }while(sensorArray[0] == 1 && sensorArray[1] == 1||sensorArray[8] == 1 && sensorArray[9] == 1);
+        if(sensorArray[0] == 1 && sensorArray[1] == 1 && sensorArray[8] == 1 && sensorArray[9] == 1){
+          break;
+        }
+        linefollow();
+      }
 
       // do{
       //   readLine();
@@ -826,20 +959,21 @@ void task2() {
 
       Turnleft();
 
-      do{
+      while(true){
         readLine();
-        linefollow(); 
-      }while(sensorArray[0] == 1 && sensorArray[1] == 1);
+        if(sensorArray[0] == 1 && sensorArray[1] == 1 && sensorArray[8] == 1 && sensorArray[9] == 1){
+          break;
+        }
+        linefollow();
+      }
 
-      do{
+      while(true){
         readLine();
-        linefollow(); 
-      }while(sensorArray[0] == 1 && sensorArray[1] == 1);
-
-      do{
-        readLine();
-        linefollow(); 
-      }while(sensorArray[0] == 1 && sensorArray[1] == 1);
+        if(sensorArray[0] == 1 && sensorArray[1] == 1){
+          break;
+        }
+        linefollow();
+      }
 
       motor2run(0);
       motor1run(0);
@@ -853,30 +987,39 @@ void task2() {
       
       Turnleft();
 
-      do{
+      while(true){
         readLine();
-        linefollow(); 
-      }while(sensorArray[0] == 1 && sensorArray[1] == 1||sensorArray[8] == 1 && sensorArray[9] == 1);
+        if(sensorArray[0] == 1 && sensorArray[1] == 1 && sensorArray[8] == 1 && sensorArray[9] == 1){
+          break;
+        }
+        linefollow();
+      }
 
       motor2run(0);
       motor1run(0);
 
       Turnright();
 
-      do{
+      while(true){
         readLine();
-        linefollow(); 
-      }while(sensorArray[0] == 1 && sensorArray[1] == 1||sensorArray[8] == 1 && sensorArray[9] == 1);
+        if(sensorArray[0] == 1 && sensorArray[1] == 1 && sensorArray[8] == 1 && sensorArray[9] == 1){
+          break;
+        }
+        linefollow();
+      }
 
       motor2run(0);
       motor1run(0);
 
-      Turnright();  
+      Turnright(); 
 
-      do{
+      while(true){
         readLine();
-        linefollow(); 
-      }while(sensorArray[0] == 1 && sensorArray[1] == 1||sensorArray[8] == 1 && sensorArray[9] == 1);
+        if(sensorArray[0] == 1 && sensorArray[1] == 1 && sensorArray[8] == 1 && sensorArray[9] == 1){
+          break;
+        }
+        linefollow();
+      } 
 
       motor2run(0);
       motor1run(0);
