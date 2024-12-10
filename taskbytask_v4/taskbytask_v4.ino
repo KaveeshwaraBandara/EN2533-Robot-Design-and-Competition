@@ -992,25 +992,39 @@ void task2() {
 
 // Task 3: colour line following
 void task3() {
-   readLine();
-  if (currentSpeed < lfSpeed) currentSpeed++;
-  if (onLine == 1) {  //PID LINE FOLLOW
-    linefollow();
-    digitalWrite(13, HIGH);
-  } 
-  else {
-    digitalWrite(13, LOW);
-    if (error > 0) {
-      motor1run(-100);
-      motor2run(lfSpeed);
-    } else {
-      motor1run(lfSpeed);
-      motor2run(-100);
+  while(true){
+    int count;
+    count = sensorCount();
+    if(count<5){
+      break;
     }
+    synchronizeMotorSpeeds(1);
   }
+  while(true){
+    readLine();
+    if (currentSpeed < lfSpeed) currentSpeed++;
+    if (onLine == 1) {  //PID LINE FOLLOW
+      linefollow();
+      digitalWrite(13, HIGH);
+    } 
+    else {
+      digitalWrite(13, LOW);
+      if (error > 0) {
+        motor1run(-100);
+        motor2run(lfSpeed);
+      } 
+      else {
+        motor1run(lfSpeed);
+        motor2run(-100);
+      }
+    }
   if(colourLineDone()){
+    motor2run(0);
+    motor1run(0);
     currentState = STATE_TASK4;
+    break;
   }
+  } 
 }
 
 // Task 4: Dotted line following
@@ -1018,16 +1032,16 @@ void task4() {
   int count;
  //if all black we need to move foward until we found white dashed line  
   while(true){
-  count = sensorCount();
-  if(count==0){
-    synchronizeMotorSpeeds(1);
-  }
-  else{
-    linefollow();
-  }
+    count = sensorCount();
+    if(count==0){
+      synchronizeMotorSpeeds(1);
+    }
+    else{
+      linefollow();
+    }
 
   //condition for state transition
-  if(count>6){
+  if(count>7){
     motor2run(0);
     motor1run(0);
     currentState = STATE_TASK5;
