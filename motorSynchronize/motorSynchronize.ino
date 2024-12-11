@@ -91,9 +91,15 @@ const float CIRCUMFERENCE = PI * WHEEL_DIAMETER; // Wheel circumference in meter
 volatile int position_left = 0;                       // Encoder position (counts)
 volatile int position_right = 0;   
 
+// PID control parameters
+float KpEncoder = 2.0;  // Proportional gain
+float KiEncoder = 0.5;  // Integral gain
+float KdEncoder = 1.0;  // Derivative gain
+
 // Speed control parameters
-float basePWM = 70;             // Base PWM value
-float correctionFactor = 2.0;    // Proportional control factor
+int basePWM = 150; // Base PWM value for motors
+float integral = 0.0;
+float prevError = 0.0;
 
 // Variables for speed calculation
 volatile int prev_position_left = 0;
@@ -103,6 +109,7 @@ float speed_right = 0.0;
 
 // Time tracking
 unsigned long prevTime = 0;
+unsigned long prevPIDTime = 0;
 
 int linecolor = 0;
 float length = 0.00;
@@ -199,13 +206,12 @@ void loop() {
 
 
 
-// Function to synchronize motor speeds with direction control(Chatgpt) 
-void synchronizeMotorSpeeds(int forward) {          //foward = 1 backward = 0
+void synchronizeMotorSpeeds(int forward) {        //foward - 1 backward - 0
     unsigned long currentTime = millis();
-    unsigned long deltaTime = currentTime - prevTime;
+    unsigned long deltaTime = currentTime - prevPIDTime;
 
-    if (deltaTime >= 100) { // Update every 100 ms
-        prevTime = currentTime;
+    if (deltaTime >= 10) { // Update every 10 ms
+        prevPIDTime = currentTime;
 
         // Calculate speeds
         noInterrupts(); // Prevent ISR interference
@@ -219,13 +225,20 @@ void synchronizeMotorSpeeds(int forward) {          //foward = 1 backward = 0
         speed_left = (delta_left / (float)CPR) * CIRCUMFERENCE / (deltaTime / 1000.0);
         speed_right = (delta_right / (float)CPR) * CIRCUMFERENCE / (deltaTime / 1000.0);
 
-        // Speed synchronization
-        float speed_error = speed_left - speed_right;
-        int left_pwm = constrain(basePWM, 0, 255);
-        int right_pwm = constrain(basePWM + correctionFactor * speed_error, 0, 255);
+        // PID calculation
+        float error = speed_left - speed_right;
+        integral += error * deltaTime / 1000.0;
+        float derivative = (error - prevError) / (deltaTime / 1000.0);
+        prevError = error;
+
+        float correction = KpEncoder * error + KiEncoder * integral + KdEncoder * derivative;
+
+        // Calculate motor PWM values
+        int left_pwm = constrain(basePWM, 0, 255); // Base PWM for left motor
+        int right_pwm = constrain(basePWM + correction, 0, 255); // Adjusted PWM for right motor
 
         // Set motor directions
-        if (forward) {
+        if (forward == 1) {
             digitalWrite(AIN1, HIGH);
             digitalWrite(BIN1, HIGH);
         } else {
@@ -243,6 +256,6 @@ void synchronizeMotorSpeeds(int forward) {          //foward = 1 backward = 0
         Serial.print(" m/s, Speed Right: ");
         Serial.print(speed_right);
         Serial.print(" m/s, Error: ");
-        Serial.println(speed_error);
+        Serial.println(error);
     }
 }
