@@ -76,7 +76,7 @@ int vBoxPosition;
 
 //Box placed in task 2
 int placed = 0;
-const int pickBoxLed = 6;  //LED for task 2 virtual box pickup indication
+const int pickBoxLed = 53;  //LED for task 2 virtual box pickup indication
 
 // Constants for encoders
 const int EN_LEFT_A_PIN = 2; 
