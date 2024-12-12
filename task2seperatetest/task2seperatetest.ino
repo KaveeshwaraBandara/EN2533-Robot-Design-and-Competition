@@ -32,13 +32,13 @@ unsigned int numSensors = 10;      // Enter number of sensors as 5 or 7
 int P, D, I, previousError, PIDvalue;
 double error = 0.00;
 int lsp, rsp;
-int lfSpeed = 70;
+int lfSpeed = 80;
 int currentSpeed = 30;
 int sensorWeight[10] = {5, 4, 2, 1, 0, 0, -1, -2, -4, -5};
 int activeSensors;
-float Kp = 0.007;
-float Kd = 0.005;
-float Ki = 0.00;
+float Kp = 15;
+float Kd = 5;
+float Ki = 0;
 
 int onLine = 1;
 
@@ -70,9 +70,9 @@ int blueValue;
 
 
 //Define Array for store the barcode values(i dont know the exact numbers to add here so i allocate 10 elements check it before competion)
-int barCode[20];
+int barCode[12];
 int currentSize = 0;
-int vBoxPosition; 
+int vBoxPosition = 1; 
 
 //Box placed in task 2
 int placed = 0;
@@ -80,7 +80,7 @@ const int pickBoxLed = 53;  //LED for task 2 virtual box pickup indication
 
 // Constants for encoders
 const int EN_LEFT_A_PIN = 2; 
-const int EN_LEFT_B_PIN = 3; 
+const int EN_LEFT_B_PIN = 22; 
 const int EN_RIGHT_A_PIN = 18; 
 const int EN_RIGHT_B_PIN = 19; 
 #define CPR 225          // Encoder Pulses Per Revolution
@@ -211,7 +211,7 @@ void setup() {
 }
 
 void loop() {
-  switch (currentState) {
+    switch (currentState) {
     case STATE_TASK1:
       task1();
       break;
@@ -220,29 +220,29 @@ void loop() {
       task2();
       break;
 
-    case STATE_TASK3:
-      task3();
-      break;
+    // case STATE_TASK3:
+    //   task3();
+    //   break;
     
-    case STATE_TASK4:
-      task4();
-      break;
+    // case STATE_TASK4:
+    //   task4();
+    //   break;
 
-    case STATE_TASK5:
-      task5();
-      break;
+    // case STATE_TASK5:
+    //   task5();
+    //   break;
 
-    case STATE_TASK6:
-      task4();
-      break;
+    // case STATE_TASK6:
+    //   task4();
+    //   break;
 
-    case STATE_TASK7:
-      task7();
-      break;
+    // case STATE_TASK7:
+    //   task7();
+    //   break;
 
-    case STATE_TASK8:
-      task8();
-      break;
+    // case STATE_TASK8:
+    //   task8();
+    //   break;
 
     default:
       Serial.println("Unknown state!");
@@ -349,750 +349,755 @@ void task1() {
 // Task 2: Maze navigation
 void task2() {
   int colr;
-  int wall = openWall();                            //first wall = 0 second wall = 1
-  if(vBoxPosition == 0){                        //8,9 - right 0,1- left
-    uTurn();
 
-    while(true){
-      readLine();
-      if(sensorArray[0] == 1 && sensorArray[1] == 1){
-        break;
-      }
-      linefollow();
-    }
+  digitalWrite(53,HIGH);
+  delay(2000);
+  digitalWrite(53,LOW);
+  delay(2000);
+//   int wall = openWall();                            //first wall = 0 second wall = 1
+//   if(vBoxPosition == 0){                        //8,9 - right 0,1- left
+//     uTurn();
 
-    motor2run(0);
-    motor1run(0);
+//     while(true){
+//       readLine();
+//       if(sensorArray[0] == 1 && sensorArray[1] == 1){
+//         break;
+//       }
+//       linefollow();
+//     }
 
-    pickBox();
+//     motor2run(0);
+//     motor1run(0);
 
-    if(wall == 0){
-      moveBack();
-      moveForVB0();      
+//     pickBox();
+
+//     // if(wall == 0){
+//     //   moveBack();
+//     //   moveForVB0();      
     
-    // while(true){
-    //   readLine();
-    //   int colr = detectcolour();
-    //   if(colr == 1 || colr == 2){
-    //     break;
-    //   }
-    //   linefollow();
-    // }
-    // motor2run(0);
-    // motor1run(0);
+//     // // while(true){
+//     // //   readLine();
+//     // //   int colr = detectcolour();
+//     // //   if(colr == 1 || colr == 2){
+//     // //     break;
+//     // //   }
+//     // //   linefollow();
+//     // // }
+//     // // motor2run(0);
+//     // // motor1run(0);
 
-    // linecolor = colr;
+//     // // linecolor = colr;
 
-    // placeBox();
-    // placed = 1;
-    }
+//     // // placeBox();
+//     // // placed = 1;
+//     // }
     
-    else if(wall == 1){
-      moveBack();
-      moveBack();
+//     // else if(wall == 1){
+//     //   moveBack();
+//     //   moveBack();
       
-      moveForVB0();
+//     //   moveForVB0();
 
-    //   do{
-    //   readLine();
-    //   linefollow(); 
-    //   int colr = detectcolour(); 
-    // }while(colr == 1 || colr == 2);
+//     // //   do{
+//     // //   readLine();
+//     // //   linefollow(); 
+//     // //   int colr = detectcolour(); 
+//     // // }while(colr == 1 || colr == 2);
 
-    // motor2run(0);
-    // motor1run(0);
+//     // // motor2run(0);
+//     // // motor1run(0);
 
-    // placeBox();
-    // placed = 1;
-    }
-  }
+//     // // placeBox();
+//     // // placed = 1;
+//     // }
+//   }
 
-  //when vBox in pos 1 
-  else if(vBoxPosition == 1){
-    if(wall == 0){
-      Turnright();
+//   //when vBox in pos 1 
+//   else if(vBoxPosition == 1){
+//     if(wall == 0){
+//       Turnright();
 
-      while(true){
-        readLine();
-        if(sensorArray[0] == 1 && sensorArray[1] == 1 && sensorArray[8] == 1 && sensorArray[9] == 1){
-          break;
-        }
-        linefollow();
-      }
+//       while(true){
+//         readLine();
+//         if(sensorArray[0] == 1 && sensorArray[1] == 1 && sensorArray[8] == 1 && sensorArray[9] == 1){
+//           break;
+//         }
+//         linefollow();
+//       }
       
-      motor2run(0);
-      motor1run(0);
+//       motor2run(0);
+//       motor1run(0);
 
-      pickBox();
+//       pickBox();
 
-      moveBackColour();
+//       moveBackColour();
 
-      placeBox();
-      placed = 1;
-    }
-    else{
-      uTurn();
+//       placeBox();
+//       placed = 1;
+//     }
+//     else{
+//       uTurn();
 
-      while(true){
-        readLine();
-        if(sensorArray[0] == 1 && sensorArray[1] == 1){
-          break;
-        }
-        linefollow();
-      }
+//       while(true){
+//         readLine();
+//         if(sensorArray[0] == 1 && sensorArray[1] == 1){
+//           break;
+//         }
+//         linefollow();
+//       }
 
-      motor2run(0);
-      motor1run(0);
+//       motor2run(0);
+//       motor1run(0);
 
-      Turnleft();
+//       Turnleft();
 
-      while(true){
-        readLine();
-        if(sensorArray[0] == 1 && sensorArray[1] == 1){
-          break;
-        }
-        linefollow();
-      }
+//       while(true){
+//         readLine();
+//         if(sensorArray[0] == 1 && sensorArray[1] == 1){
+//           break;
+//         }
+//         linefollow();
+//       }
 
-      motor2run(0);
-      motor1run(0);
+//       motor2run(0);
+//       motor1run(0);
 
-      Turnleft();
+//       Turnleft();
 
-      while(true){
-        readLine();
-        if(sensorArray[0] == 1 && sensorArray[1] == 1){
-          break;
-        }
-        linefollow();
-      }
+//       while(true){
+//         readLine();
+//         if(sensorArray[0] == 1 && sensorArray[1] == 1){
+//           break;
+//         }
+//         linefollow();
+//       }
 
-      motor2run(0);
-      motor1run(0);
+//       motor2run(0);
+//       motor1run(0);
 
-      pickBox();
+//       pickBox();
 
-      while(true){
-        readLine();
-        if(sensorArray[0] == 1 && sensorArray[1] == 1){
-          break;
-        }
-        linefollow();
-      }
+//       while(true){
+//         readLine();
+//         if(sensorArray[0] == 1 && sensorArray[1] == 1){
+//           break;
+//         }
+//         linefollow();
+//       }
 
-      while(true){
-        readLine();
-        if(sensorArray[0] == 1 && sensorArray[1] == 1){
-          break;
-        }
-        linefollow();
-      }
+//       while(true){
+//         readLine();
+//         if(sensorArray[0] == 1 && sensorArray[1] == 1){
+//           break;
+//         }
+//         linefollow();
+//       }
 
-      motor2run(0);
-      motor1run(0);
+//       motor2run(0);
+//       motor1run(0);
 
-      placeBox();
+//       placeBox();
 
-      moveBackAbove();
+//       moveBackAbove();
 
-      Turnleft();
+//       Turnleft();
 
-      while(true){
-        readLine();
-        if(sensorArray[0] == 1 && sensorArray[1] == 1 && sensorArray[8] == 1 && sensorArray[9] == 1){
-          break;
-        }
-        linefollow();
-      }
+//       while(true){
+//         readLine();
+//         if(sensorArray[0] == 1 && sensorArray[1] == 1 && sensorArray[8] == 1 && sensorArray[9] == 1){
+//           break;
+//         }
+//         linefollow();
+//       }
 
-      motor2run(0);
-      motor1run(0);
+//       motor2run(0);
+//       motor1run(0);
 
-      Turnright();
+//       Turnright();
 
-      while(true){
-        readLine();
-        if(sensorArray[0] == 1 && sensorArray[1] == 1 && sensorArray[8] == 1 && sensorArray[9] == 1){
-          break;
-        }
-        linefollow();
-      }
+//       while(true){
+//         readLine();
+//         if(sensorArray[0] == 1 && sensorArray[1] == 1 && sensorArray[8] == 1 && sensorArray[9] == 1){
+//           break;
+//         }
+//         linefollow();
+//       }
 
-      motor2run(0);
-      motor1run(0);
+//       motor2run(0);
+//       motor1run(0);
 
-      Turnright();
+//       Turnright();
 
-      while(true){
-        readLine();
-        if(sensorArray[0] == 1 && sensorArray[1] == 1 && sensorArray[8] == 1 && sensorArray[9] == 1){
-          break;
-        }
-        linefollow();
-      }
+//       while(true){
+//         readLine();
+//         if(sensorArray[0] == 1 && sensorArray[1] == 1 && sensorArray[8] == 1 && sensorArray[9] == 1){
+//           break;
+//         }
+//         linefollow();
+//       }
 
-      motor2run(0);
-      motor1run(0);
+//       motor2run(0);
+//       motor1run(0);
 
-      // Turnright();
+//       // Turnright();
 
-      // while(true){
-      //   readLine();
-      //   if(sensorArray[0] == 1 && sensorArray[1] == 1 && sensorArray[8] == 1 && sensorArray[9] == 1){
-      //     break;
-      //   }
-      //   linefollow();
-      // }
+//       // while(true){
+//       //   readLine();
+//       //   if(sensorArray[0] == 1 && sensorArray[1] == 1 && sensorArray[8] == 1 && sensorArray[9] == 1){
+//       //     break;
+//       //   }
+//       //   linefollow();
+//       // }
 
-      // motor2run(0);
-      // motor1run(0);
+//       // motor2run(0);
+//       // motor1run(0);
 
-      pickBox();
+//       pickBox();
 
-      moveBackColour();
+//       moveBackColour();
 
-      placeBox();
-      placed = 1;
-    }
-  }
+//       placeBox();
+//       placed = 1;
+//     }
+//   }
 
-  else if(vBoxPosition == 2){
-    if(wall == 0){
-      Turnright();
+//   else if(vBoxPosition == 2){
+//     if(wall == 0){
+//       Turnright();
       
-      while(true){
-        readLine();
-        if(sensorArray[0] == 1 && sensorArray[1] == 1 && sensorArray[8] == 1 && sensorArray[9] == 1){
-          break;
-        }
-        linefollow();
-      }
+//       while(true){
+//         readLine();
+//         if(sensorArray[0] == 1 && sensorArray[1] == 1 && sensorArray[8] == 1 && sensorArray[9] == 1){
+//           break;
+//         }
+//         linefollow();
+//       }
 
-      motor2run(0);
-      motor1run(0);
+//       motor2run(0);
+//       motor1run(0);
 
-      Turnleft();
+//       Turnleft();
 
-      while(true){
-        readLine();
-        if(sensorArray[0] == 1 && sensorArray[1] == 1){
-          break;
-        }
-        linefollow();
-      }
+//       while(true){
+//         readLine();
+//         if(sensorArray[0] == 1 && sensorArray[1] == 1){
+//           break;
+//         }
+//         linefollow();
+//       }
 
-      motor2run(0);
-      motor1run(0);
+//       motor2run(0);
+//       motor1run(0);
 
-      pickBox();
+//       pickBox();
 
-      moveBackAbove();
+//       moveBackAbove();
 
-      placeBox();
+//       placeBox();
 
-      moveBackAbove();
+//       moveBackAbove();
 
-      Turnleft();
+//       Turnleft();
 
-      while(true){
-        readLine();
-        if(sensorArray[8] == 1 && sensorArray[9] == 1){
-          break;
-        }
-        linefollow();
-      }
+//       while(true){
+//         readLine();
+//         if(sensorArray[8] == 1 && sensorArray[9] == 1){
+//           break;
+//         }
+//         linefollow();
+//       }
 
-      motor2run(0);
-      motor1run(0);
+//       motor2run(0);
+//       motor1run(0);
 
-      Turnright();
+//       Turnright();
 
-      while(true){
-        readLine();
-        if(sensorArray[0] == 1 && sensorArray[1] == 1 && sensorArray[8] == 1 && sensorArray[9] == 1){
-          break;
-        }
-        linefollow();
-      }
+//       while(true){
+//         readLine();
+//         if(sensorArray[0] == 1 && sensorArray[1] == 1 && sensorArray[8] == 1 && sensorArray[9] == 1){
+//           break;
+//         }
+//         linefollow();
+//       }
 
-      motor2run(0);
-      motor1run(0);
+//       motor2run(0);
+//       motor1run(0);
 
-      Turnright();
+//       Turnright();
 
-      while(true){
-        readLine();
-        if(sensorArray[0] == 1 && sensorArray[1] == 1 && sensorArray[8] == 1 && sensorArray[9] == 1){
-          break;
-        }
-        linefollow();
-      }
+//       while(true){
+//         readLine();
+//         if(sensorArray[0] == 1 && sensorArray[1] == 1 && sensorArray[8] == 1 && sensorArray[9] == 1){
+//           break;
+//         }
+//         linefollow();
+//       }
 
-      motor2run(0);
-      motor1run(0);
+//       motor2run(0);
+//       motor1run(0);
       
-      pickBox();
+//       pickBox();
 
-      moveBackColour();
+//       moveBackColour();
 
-      placeBox();
-      placed = 1;
-    }
+//       placeBox();
+//       placed = 1;
+//     }
 
-    else{
-      Turnright();
+//     else{
+//       Turnright();
       
-      while(true){
-        readLine();
-        if(sensorArray[0] == 1 && sensorArray[1] == 1 && sensorArray[8] == 1 && sensorArray[9] == 1){
-          break;
-        }
-        linefollow();
-      }
+//       while(true){
+//         readLine();
+//         if(sensorArray[0] == 1 && sensorArray[1] == 1 && sensorArray[8] == 1 && sensorArray[9] == 1){
+//           break;
+//         }
+//         linefollow();
+//       }
 
-      motor2run(0);
-      motor1run(0);
+//       motor2run(0);
+//       motor1run(0);
 
-      Turnleft();
+//       Turnleft();
 
-      while(true){
-        readLine();
-        if(sensorArray[0] == 1 && sensorArray[1] == 1){
-          break;
-        }
-        linefollow();
-      }
+//       while(true){
+//         readLine();
+//         if(sensorArray[0] == 1 && sensorArray[1] == 1){
+//           break;
+//         }
+//         linefollow();
+//       }
 
-      motor2run(0);
-      motor1run(0);
+//       motor2run(0);
+//       motor1run(0);
 
-      pickBox();
+//       pickBox();
 
-      while(true){
-        readLine();
-        if(sensorArray[0] == 1 && sensorArray[1] == 1){
-          break;
-        }
-        linefollow();
-      }
+//       while(true){
+//         readLine();
+//         if(sensorArray[0] == 1 && sensorArray[1] == 1){
+//           break;
+//         }
+//         linefollow();
+//       }
 
-      motor2run(0);
-      motor1run(0);
+//       motor2run(0);
+//       motor1run(0);
 
-      placeBox();
+//       placeBox();
       
-      moveBackAbove();
-      Turnleft();
+//       moveBackAbove();
+//       Turnleft();
 
-      while(true){
-        readLine();
-        if(sensorArray[0] == 1 && sensorArray[1] == 1 && sensorArray[8] == 1 && sensorArray[9] == 1){
-          break;
-        }
-        linefollow();
-      }
+//       while(true){
+//         readLine();
+//         if(sensorArray[0] == 1 && sensorArray[1] == 1 && sensorArray[8] == 1 && sensorArray[9] == 1){
+//           break;
+//         }
+//         linefollow();
+//       }
 
-      motor2run(0);
-      motor1run(0);
+//       motor2run(0);
+//       motor1run(0);
 
-      Turnright();
+//       Turnright();
 
-      while(true){
-        readLine();
-        if(sensorArray[0] == 1 && sensorArray[1] == 1 && sensorArray[8] == 1 && sensorArray[9] == 1){
-          break;
-        }
-        linefollow();
-      }
+//       while(true){
+//         readLine();
+//         if(sensorArray[0] == 1 && sensorArray[1] == 1 && sensorArray[8] == 1 && sensorArray[9] == 1){
+//           break;
+//         }
+//         linefollow();
+//       }
 
-      motor2run(0);
-      motor1run(0);
+//       motor2run(0);
+//       motor1run(0);
 
-      Turnright(); 
+//       Turnright(); 
 
-      while(true){
-        readLine();
-        if(sensorArray[0] == 1 && sensorArray[1] == 1 && sensorArray[8] == 1 && sensorArray[9] == 1){
-          break;
-        }
-        linefollow();
-      } 
+//       while(true){
+//         readLine();
+//         if(sensorArray[0] == 1 && sensorArray[1] == 1 && sensorArray[8] == 1 && sensorArray[9] == 1){
+//           break;
+//         }
+//         linefollow();
+//       } 
 
-      motor2run(0);
-      motor1run(0);
+//       motor2run(0);
+//       motor1run(0);
 
-      pickBox();
+//       pickBox();
 
-      moveBackColour();
+//       moveBackColour();
 
-      placeBox();
-      placed = 1;
-    }
-  }
+//       placeBox();
+//       placed = 1;
+//     }
+//   }
 
-  else if(vBoxPosition == 3){
-    if(wall == 0){
-      Turnright();
+//   else if(vBoxPosition == 3){
+//     if(wall == 0){
+//       Turnright();
 
-      while(true){
-        readLine();
-        if(sensorArray[0] == 1 && sensorArray[1] == 1 && sensorArray[8] == 1 && sensorArray[9] == 1){
-          break;
-        }
-        linefollow();
-      }
+//       while(true){
+//         readLine();
+//         if(sensorArray[0] == 1 && sensorArray[1] == 1 && sensorArray[8] == 1 && sensorArray[9] == 1){
+//           break;
+//         }
+//         linefollow();
+//       }
 
-      motor2run(0);
-      motor1run(0);
+//       motor2run(0);
+//       motor1run(0);
 
-      Turnleft();
+//       Turnleft();
 
-      while(true){
-        readLine();
-        if(sensorArray[0] == 1 && sensorArray[1] == 1){
-          break;
-        }
-        linefollow();
-      }
+//       while(true){
+//         readLine();
+//         if(sensorArray[0] == 1 && sensorArray[1] == 1){
+//           break;
+//         }
+//         linefollow();
+//       }
 
-      while(true){
-        readLine();
-        if(sensorArray[0] == 1 && sensorArray[1] == 1){
-          break;
-        }
-        linefollow();
-      }
+//       while(true){
+//         readLine();
+//         if(sensorArray[0] == 1 && sensorArray[1] == 1){
+//           break;
+//         }
+//         linefollow();
+//       }
 
-      motor2run(0);
-      motor1run(0);
+//       motor2run(0);
+//       motor1run(0);
 
-      pickBox();
+//       pickBox();
 
-      moveBackAbove();
-      moveBackAbove();
+//       moveBackAbove();
+//       moveBackAbove();
       
-      placeBox();
+//       placeBox();
 
-      moveBackAbove();
+//       moveBackAbove();
 
-      Turnleft();
+//       Turnleft();
 
-      while(true){
-        readLine();
-        if(sensorArray[8] == 1 && sensorArray[9] == 1){
-          break;
-        }
-        linefollow();
-      }
+//       while(true){
+//         readLine();
+//         if(sensorArray[8] == 1 && sensorArray[9] == 1){
+//           break;
+//         }
+//         linefollow();
+//       }
 
-      motor2run(0);
-      motor1run(0);
+//       motor2run(0);
+//       motor1run(0);
 
-      Turnright();
+//       Turnright();
 
-      while(true){
-        readLine();
-        if(sensorArray[0] == 1 && sensorArray[1] == 1 && sensorArray[8] == 1 && sensorArray[9] == 1){
-          break;
-        }
-        linefollow();
-      }
+//       while(true){
+//         readLine();
+//         if(sensorArray[0] == 1 && sensorArray[1] == 1 && sensorArray[8] == 1 && sensorArray[9] == 1){
+//           break;
+//         }
+//         linefollow();
+//       }
 
-      motor2run(0);
-      motor1run(0);
+//       motor2run(0);
+//       motor1run(0);
 
-      Turnright();
+//       Turnright();
 
-      while(true){
-        readLine();
-        if(sensorArray[0] == 1 && sensorArray[1] == 1 && sensorArray[8] == 1 && sensorArray[9] == 1){
-          break;
-        }
-        linefollow();
-      }
+//       while(true){
+//         readLine();
+//         if(sensorArray[0] == 1 && sensorArray[1] == 1 && sensorArray[8] == 1 && sensorArray[9] == 1){
+//           break;
+//         }
+//         linefollow();
+//       }
 
-      motor2run(0);
-      motor1run(0);
+//       motor2run(0);
+//       motor1run(0);
       
-      pickBox();
+//       pickBox();
 
-      moveBackColour();
+//       moveBackColour();
 
-      placeBox();
-      placed = 1;
-    }
-    else{
-      while(true){
-        readLine();
-        if(sensorArray[0] == 1 && sensorArray[1] == 1 && sensorArray[8] == 1 && sensorArray[9] == 1){
-          break;
-        }
-        linefollow();
-      }
+//       placeBox();
+//       placed = 1;
+//     }
+//     else{
+//       while(true){
+//         readLine();
+//         if(sensorArray[0] == 1 && sensorArray[1] == 1 && sensorArray[8] == 1 && sensorArray[9] == 1){
+//           break;
+//         }
+//         linefollow();
+//       }
 
-      motor2run(0);
-      motor1run(0);
+//       motor2run(0);
+//       motor1run(0);
 
-      Turnright();
+//       Turnright();
 
-      while(true){
-        readLine();
-        if(sensorArray[0] == 1 && sensorArray[1] == 1 && sensorArray[8] == 1 && sensorArray[9] == 1){
-          break;
-        }
-        linefollow();
-      }
+//       while(true){
+//         readLine();
+//         if(sensorArray[0] == 1 && sensorArray[1] == 1 && sensorArray[8] == 1 && sensorArray[9] == 1){
+//           break;
+//         }
+//         linefollow();
+//       }
 
-      motor2run(0);
-      motor1run(0);
+//       motor2run(0);
+//       motor1run(0);
       
-      pickBox();
+//       pickBox();
 
-      moveBackColour();
+//       moveBackColour();
 
-      placeBox();
-      placed = 1;
-    }
+//       placeBox();
+//       placed = 1;
+//     }
 
-  }
+//   }
 
-  else if(vBoxPosition == 4){
-    if(wall == 0){
-      Turnright();
+//   else if(vBoxPosition == 4){
+//     if(wall == 0){
+//       Turnright();
 
-      while(true){
-        readLine();
-        if(sensorArray[0] == 1 && sensorArray[1] == 1 && sensorArray[8] == 1 && sensorArray[9] == 1){
-          break;
-        }
-        linefollow();
-      }
+//       while(true){
+//         readLine();
+//         if(sensorArray[0] == 1 && sensorArray[1] == 1 && sensorArray[8] == 1 && sensorArray[9] == 1){
+//           break;
+//         }
+//         linefollow();
+//       }
 
-      motor2run(0);
-      motor1run(0);
+//       motor2run(0);
+//       motor1run(0);
 
-      Turnleft();
+//       Turnleft();
 
-      while(true){
-        readLine();
-        if(sensorArray[0] == 1 && sensorArray[1] == 1){
-          break;
-        }
-        linefollow();
-      }
+//       while(true){
+//         readLine();
+//         if(sensorArray[0] == 1 && sensorArray[1] == 1){
+//           break;
+//         }
+//         linefollow();
+//       }
 
-      while(true){
-        readLine();
-        if(sensorArray[0] == 1 && sensorArray[1] == 1){
-          break;
-        }
-        linefollow();
-      }
+//       while(true){
+//         readLine();
+//         if(sensorArray[0] == 1 && sensorArray[1] == 1){
+//           break;
+//         }
+//         linefollow();
+//       }
 
-      while(true){
-        readLine();
-        if(sensorArray[0] == 1 && sensorArray[1] == 1){
-          break;
-        }
-        linefollow();
-      }
+//       while(true){
+//         readLine();
+//         if(sensorArray[0] == 1 && sensorArray[1] == 1){
+//           break;
+//         }
+//         linefollow();
+//       }
 
-      motor2run(0);
-      motor1run(0);
+//       motor2run(0);
+//       motor1run(0);
 
-      pickBox();
+//       pickBox();
 
-      moveBackAbove();
-      moveBackAbove();
-      moveBackAbove();
+//       moveBackAbove();
+//       moveBackAbove();
+//       moveBackAbove();
 
-      placeBox();
+//       placeBox();
 
-      moveBackAbove();
+//       moveBackAbove();
 
-      Turnleft();
+//       Turnleft();
 
-      while(true){
-        readLine();
-        if(sensorArray[8] == 1 && sensorArray[9] == 1){
-          break;
-        }
-        linefollow();
-      }
+//       while(true){
+//         readLine();
+//         if(sensorArray[8] == 1 && sensorArray[9] == 1){
+//           break;
+//         }
+//         linefollow();
+//       }
 
-      motor2run(0);
-      motor1run(0);
+//       motor2run(0);
+//       motor1run(0);
 
-      Turnright();
+//       Turnright();
 
-      while(true){
-        readLine();
-        if(sensorArray[0] == 1 && sensorArray[1] == 1 && sensorArray[8] == 1 && sensorArray[9] == 1){
-          break;
-        }
-        linefollow();
-      }
+//       while(true){
+//         readLine();
+//         if(sensorArray[0] == 1 && sensorArray[1] == 1 && sensorArray[8] == 1 && sensorArray[9] == 1){
+//           break;
+//         }
+//         linefollow();
+//       }
 
-      motor2run(0);
-      motor1run(0);
+//       motor2run(0);
+//       motor1run(0);
 
-      Turnright();
+//       Turnright();
 
-      while(true){
-        readLine();
-        if(sensorArray[0] == 1 && sensorArray[1] == 1 && sensorArray[8] == 1 && sensorArray[9] == 1){
-          break;
-        }
-        linefollow();
-      }
+//       while(true){
+//         readLine();
+//         if(sensorArray[0] == 1 && sensorArray[1] == 1 && sensorArray[8] == 1 && sensorArray[9] == 1){
+//           break;
+//         }
+//         linefollow();
+//       }
 
-      motor2run(0);
-      motor1run(0);
+//       motor2run(0);
+//       motor1run(0);
       
-      pickBox();
+//       pickBox();
 
-      moveBackColour();
+//       moveBackColour();
 
-      placeBox();
-      placed = 1;
-    }
-    else{
-      Turnright();
+//       placeBox();
+//       placed = 1;
+//     }
+//     else{
+//       Turnright();
 
-      while(true){
-        readLine();
-        if(sensorArray[0] == 1 && sensorArray[1] == 1 && sensorArray[8] == 1 && sensorArray[9] == 1){
-          break;
-        }
-        linefollow();
-      }
+//       while(true){
+//         readLine();
+//         if(sensorArray[0] == 1 && sensorArray[1] == 1 && sensorArray[8] == 1 && sensorArray[9] == 1){
+//           break;
+//         }
+//         linefollow();
+//       }
 
-      motor2run(0);
-      motor1run(0);
+//       motor2run(0);
+//       motor1run(0);
 
-      Turnleft();
+//       Turnleft();
 
-      while(true){
-        readLine();
-        if(sensorArray[0] == 1 && sensorArray[1] == 1 && sensorArray[8] == 1 && sensorArray[9] == 1){
-          break;
-        }
-        linefollow();
-      }
+//       while(true){
+//         readLine();
+//         if(sensorArray[0] == 1 && sensorArray[1] == 1 && sensorArray[8] == 1 && sensorArray[9] == 1){
+//           break;
+//         }
+//         linefollow();
+//       }
 
-      while(true){
-        readLine();
-        if(sensorArray[0] == 1 && sensorArray[1] == 1){
-          break;
-        }
-        linefollow();
-      }
+//       while(true){
+//         readLine();
+//         if(sensorArray[0] == 1 && sensorArray[1] == 1){
+//           break;
+//         }
+//         linefollow();
+//       }
 
-      while(true){
-        readLine();
-        if(sensorArray[0] == 1 && sensorArray[1] == 1){
-          break;
-        }
-        linefollow();
-      }
+//       while(true){
+//         readLine();
+//         if(sensorArray[0] == 1 && sensorArray[1] == 1){
+//           break;
+//         }
+//         linefollow();
+//       }
 
-      motor2run(0);
-      motor1run(0);
+//       motor2run(0);
+//       motor1run(0);
 
-      pickBox();
-      moveBackAbove();
+//       pickBox();
+//       moveBackAbove();
       
-      placeBox();
+//       placeBox();
 
-      moveBackAbove(); 
+//       moveBackAbove(); 
       
-      Turnleft();
+//       Turnleft();
 
-      while(true){
-        readLine();
-        if(sensorArray[0] == 1 && sensorArray[1] == 1 && sensorArray[8] == 1 && sensorArray[9] == 1){
-          break;
-        }
-        linefollow();
-      }
+//       while(true){
+//         readLine();
+//         if(sensorArray[0] == 1 && sensorArray[1] == 1 && sensorArray[8] == 1 && sensorArray[9] == 1){
+//           break;
+//         }
+//         linefollow();
+//       }
 
-      motor2run(0);
-      motor1run(0);
+//       motor2run(0);
+//       motor1run(0);
 
-      Turnright();
+//       Turnright();
 
-      while(true){
-        readLine();
-        if(sensorArray[0] == 1 && sensorArray[1] == 1 && sensorArray[8] == 1 && sensorArray[9] == 1){
-          break;
-        }
-        linefollow();
-      }
+//       while(true){
+//         readLine();
+//         if(sensorArray[0] == 1 && sensorArray[1] == 1 && sensorArray[8] == 1 && sensorArray[9] == 1){
+//           break;
+//         }
+//         linefollow();
+//       }
 
-      motor2run(0);
-      motor1run(0);
+//       motor2run(0);
+//       motor1run(0);
 
-      Turnright(); 
+//       Turnright(); 
 
-      while(true){
-        readLine();
-        if(sensorArray[0] == 1 && sensorArray[1] == 1 && sensorArray[8] == 1 && sensorArray[9] == 1){
-          break;
-        }
-        linefollow();
-      } 
+//       while(true){
+//         readLine();
+//         if(sensorArray[0] == 1 && sensorArray[1] == 1 && sensorArray[8] == 1 && sensorArray[9] == 1){
+//           break;
+//         }
+//         linefollow();
+//       } 
 
-      motor2run(0);
-      motor1run(0);
+//       motor2run(0);
+//       motor1run(0);
 
-      pickBox();
+//       pickBox();
 
-      moveBackColour();
+//       moveBackColour();
 
-      placeBox();
-      placed = 1;
-    }
-  }
-  if(placed){
-    currentState = STATE_TASK3;
-  }  
-}
+//       placeBox();
+//       placed = 1;
+//     }
+//   }
+//   if(placed){
+//     currentState = STATE_TASK3;
+//   }  
+// }
 
-// Task 3: colour line following
-void task3() {
-  while(true){
-    int count;
-    count = sensorCount();
-    if(count<5){
-      break;
-    }
-    synchronizeMotorSpeeds(1);
-  }
-  while(true){
-    readLine();
-    if (currentSpeed < lfSpeed) currentSpeed++;
-    if (onLine == 1) {  //PID LINE FOLLOW
-      linefollow();
-      digitalWrite(13, HIGH);
-    } 
-    else {
-      digitalWrite(13, LOW);
-      if (error > 0) {
-        motor1run(-100);
-        motor2run(lfSpeed);
-      } 
-      else {
-        motor1run(lfSpeed);
-        motor2run(-100);
-      }
-    }
-  if(colourLineDone()){
-    motor2run(0);
-    motor1run(0);
-    currentState = STATE_TASK4;
-    break;
-  }
-  } 
+// // Task 3: colour line following
+// void task3() {
+//   while(true){
+//     int count;
+//     count = sensorCount();
+//     if(count<5){
+//       break;
+//     }
+//     synchronizeMotorSpeeds(1);
+//   }
+//   while(true){
+//     readLine();
+//     if (currentSpeed < lfSpeed) currentSpeed++;
+//     if (onLine == 1) {  //PID LINE FOLLOW
+//       linefollow();
+//       digitalWrite(13, HIGH);
+//     } 
+//     else {
+//       digitalWrite(13, LOW);
+//       if (error > 0) {
+//         motor1run(-100);
+//         motor2run(lfSpeed);
+//       } 
+//       else {
+//         motor1run(lfSpeed);
+//         motor2run(-100);
+//       }
+//     }
+//   if(colourLineDone()){
+//     motor2run(0);
+//     motor1run(0);
+//     currentState = STATE_TASK4;
+//     break;
+//   }
+//   } 
 }
 
 // Task 4: Dotted line following
@@ -1614,6 +1619,7 @@ bool barcodeReadComplete() {
     return false;
   }  
 }
+
 //maze completion condition already i wrote within the loop
 //task 4 completion condition already i wrote within the loop
 
@@ -1644,7 +1650,7 @@ void calibrate() {
     maxValues[i] = analogRead(i);
   }
 
-  for (int i = 0; i < 3000; i++) {
+  for (int i = 0; i < 1000; i++) {
     motor1run(100);
     motor2run(-100);
 
@@ -1673,21 +1679,21 @@ void calibrate() {
 //Read the IR values in each and every loop
 void readLine() {
   onLine = 0;
-  if (numSensors == 10) {
-    for (int i = 0; i < 10; i++) {
-      if (isBlackLine) {
-        sensorValue[i] = map(analogRead(i), minValues[i], maxValues[i], 0, 1000);
-      } else {
-        sensorValue[i] = map(analogRead(i), minValues[i], maxValues[i], 1000, 0);
-      }
-      sensorValue[i] = constrain(sensorValue[i], 0, 1000);
-      sensorArray[i] = sensorValue[i] > 500;
-      if (sensorArray[i]) onLine = 1;
-
-      if (isBlackLine == 1 && sensorArray[i]) onLine = 1;
-      if (isBlackLine == 0 && !sensorValue[i]) onLine = 1;
+   
+  for (int i = 0; i < 10; i++) {
+    if (isBlackLine) {
+      sensorValue[i] = map(analogRead(i), minValues[i], maxValues[i], 0, 1000);
+    } else {
+      sensorValue[i] = map(analogRead(i), minValues[i], maxValues[i], 1000, 0);
     }
+    sensorValue[i] = constrain(sensorValue[i], 0, 1000);
+    sensorArray[i] = sensorValue[i] > 500;
+    if (sensorArray[i]) onLine = 1;
+
+    if (isBlackLine == 1 && sensorArray[i]) onLine = 1;
+    if (isBlackLine == 0 && sensorArray[i]) onLine = 1;
   }
+  
 }
 
 //Line follow using PID 
@@ -1828,12 +1834,20 @@ void motor2run(int motorSpeed) {
 }
 
 //check this (Got from chatgpt)s
-int binaryToDecimal(int binary[], int length) {
-  int decimal = 0;
-  for (int i = 0; i < length; i++) {
-    decimal = decimal * 2 + binary[i];  // Left shift and add the current binary bit
+int binaryToDecimal(int arr[], int size) {
+  int num = 0;
+  size = size - 3;  // Adjust size if needed (this removes the last 3 bits)
+  
+  for (int i = 0; i < size; i++) {
+    num = (num << 1) | arr[i];  // Shift left and add the current bit
+    Serial.print("Current num: ");
+    Serial.print(num);
+    Serial.print(" after adding bit ");
+    Serial.print(arr[i]);
+    Serial.print(" at position ");
+    Serial.println(i);
   }
-  return decimal;
+  return num;
 }
 
 //turn right using encoders
@@ -2369,4 +2383,13 @@ void moveForVB0(){
     }
     placeBox();
     placed = 1;
+}
+
+int b2d(int arr[],int size){
+  int num=0;
+  size = size-3;
+  for(int i = 0 ; i<size; i++){
+    num+=pow(2,size-(i+1));
+  }
+  return num;
 }
