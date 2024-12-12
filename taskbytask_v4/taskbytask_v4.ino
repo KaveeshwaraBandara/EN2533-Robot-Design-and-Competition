@@ -1994,6 +1994,28 @@ void placeBox(){
 
 //turn 180 degree
 void uTurn(){
+  position_left = 0;
+  position_right = 0;  
+  while (position_left > -325 || position_right < 325 ){ 
+    if (position_left > -325 && position_right < 325){
+      motor2run(lfSpeed);
+      motor1run(-lfSpeed);
+    }
+    else if (position_left < -325  && position_right < 325){
+      motor1run(0);
+      motor2run(lfSpeed);      
+    }
+    else if (position_left > -325 && position_right > 325){
+      motor1run(-lfSpeed);
+      motor2run(0);      
+    }
+    else{
+      motor2run(0);
+      motor1run(0);   
+    }
+  }
+  motor2run(0);
+  motor1run(0); 
 
 }
 
