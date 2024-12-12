@@ -80,20 +80,30 @@ const int pickBoxLed = 6;  //LED for task 2 virtual box pickup indication
 
 // Constants for encoders
 const int EN_LEFT_A_PIN = 2; 
-const int EN_LEFT_B_PIN = 22; 
-const int EN_RIGHT_A_PIN = 3; 
-const int EN_RIGHT_B_PIN = 23; 
+const int EN_LEFT_B_PIN = 3; 
+const int EN_RIGHT_A_PIN = 18; 
+const int EN_RIGHT_B_PIN = 19; 
 #define CPR 225          // Encoder Pulses Per Revolution
 #define WHEEL_DIAMETER 0.064 // Wheel diameter in meters (example: 6.5 cm)
 
+// Time tracking
+unsigned long prevTime = 0;
+unsigned long prevPIDTime = 0;
 
 const float CIRCUMFERENCE = PI * WHEEL_DIAMETER; // Wheel circumference in meters
 volatile int position_left = 0;                       // Encoder position (counts)
-volatile int position_right = 0;   
+volatile int position_right = 0;  
+
+// PID control parameters
+float KpEncoder = 8.0;  // Proportional gain
+float KiEncoder = 0.5;  // Integral gain
+float KdEncoder = 4.0;  // Derivative gain
 
 // Speed control parameters
 float basePWM = 70;             // Base PWM value
-float correctionFactor = 2.0;    // Proportional control factor
+float integral = 0.0;
+float prevError = 0.0;
+int baseleftPWM = basePWM;
 
 // Variables for speed calculation
 volatile int prev_position_left = 0;
@@ -102,7 +112,7 @@ float speed_left = 0.0;
 float speed_right = 0.0;
 
 // Time tracking
-unsigned long prevTime = 0;
+//unsigned long prevTime = 0;
 
 int linecolor = 0;
 float length = 0.00;
@@ -1654,37 +1664,51 @@ void linefollow() {
 }
 
 // Function to synchronize motor speeds with direction control(Chatgpt) 
-void synchronizeMotorSpeeds(int forward) {          //foward = 1 backward = 0
+void synchronizeMotorSpeeds(int forward) {        //foward - 1 backward - 0
     unsigned long currentTime = millis();
-    unsigned long deltaTime = currentTime - prevTime;
+    unsigned long deltaTime = currentTime - prevPIDTime;
 
     if (deltaTime >= 100) { // Update every 100 ms
-        prevTime = currentTime;
+        prevPIDTime = currentTime;
 
         // Calculate speeds
         noInterrupts(); // Prevent ISR interference
-        int delta_left = position_left - prev_position_left;
-        int delta_right = position_right - prev_position_right;
+        //int delta_left = position_left - prev_position_left;
+        //int delta_right = position_right - prev_position_right;
+        
+        
+        // Speed (in m/s)
+        //speed_left = (delta_left / (float)CPR) * CIRCUMFERENCE / (deltaTime / 1000.0);
+        //speed_right = (delta_right / (float)CPR) * CIRCUMFERENCE / (deltaTime / 1000.0);
+
+        // PID calculation
+        float error = position_right - position_left;
+        integral += error * deltaTime / 1000.0;
+        float derivative = (error - prevError) / (deltaTime / 1000.0);
+        prevError = error;
+
         prev_position_left = position_left;
         prev_position_right = position_right;
         interrupts();
 
-        // Speed (in m/s)
-        speed_left = (delta_left / (float)CPR) * CIRCUMFERENCE / (deltaTime / 1000.0);
-        speed_right = (delta_right / (float)CPR) * CIRCUMFERENCE / (deltaTime / 1000.0);
 
-        // Speed synchronization
-        float speed_error = speed_left - speed_right;
-        int left_pwm = constrain(basePWM, 0, 255);
-        int right_pwm = constrain(basePWM + correctionFactor * speed_error, 0, 255);
+        float correction = (KpEncoder * error + KiEncoder * integral + KdEncoder * derivative)/100;
+        baseleftPWM += (int)correction;
+        // Calculate motor PWM values
+        int left_pwm = constrain(baseleftPWM, 0, 255); // Base PWM for left motor
+        int right_pwm = constrain(basePWM, 0, 255); // Adjusted PWM for right motor
 
         // Set motor directions
-        if (forward) {
-            digitalWrite(AIN1, HIGH);
+        if (forward == 1) {
+            digitalWrite(AIN1, HIGH);  
             digitalWrite(BIN1, HIGH);
-        } else {
             digitalWrite(AIN2, LOW);
             digitalWrite(BIN2, LOW);
+        } else {
+            digitalWrite(AIN2, HIGH);
+            digitalWrite(BIN2, HIGH);
+            digitalWrite(AIN1, LOW);  
+            digitalWrite(BIN1, LOW);
         }
 
         // Set motor speeds
@@ -1697,7 +1721,7 @@ void synchronizeMotorSpeeds(int forward) {          //foward = 1 backward = 0
         Serial.print(" m/s, Speed Right: ");
         Serial.print(speed_right);
         Serial.print(" m/s, Error: ");
-        Serial.println(speed_error);
+        Serial.println(error);
     }
 }
 
@@ -1750,7 +1774,7 @@ int binaryToDecimal(int binary[], int length) {
 void Turnright(){
   position_left = 0;
   position_right = 0;  
-  while (position_left < 325 || position_left < 15 ){
+  while (position_left < 325 || position_right < 15 ){
     display.clearDisplay();
     display.setCursor(0, 10);
     display.println("pos_left =");
@@ -1763,12 +1787,12 @@ void Turnright(){
       motor1run(lfSpeed);
     }
     else if (position_left < 325 && position_right > 15){
-      motor2run(lfSpeed);
-      motor1run(0);      
+      motor1run(lfSpeed);
+      motor2run(0);      
     }
     else if (position_left > 325 && position_right < 15){
-      motor2run(0);
-      motor1run(lfSpeed);      
+      motor1run(0);
+      motor2run(lfSpeed);      
     }
     else{
       motor2run(0);
@@ -1783,7 +1807,7 @@ void Turnright(){
 void Turnleft(){
   position_left = 0;
   position_right = 0;  
-  while (position_left < 15 || position_left < 325 ){
+  while (position_left < 15 || position_right < 325 ){
     display.clearDisplay();
     display.setCursor(0, 10);
     display.println("pos_left =");
@@ -1796,12 +1820,12 @@ void Turnleft(){
       motor1run(lfSpeed);
     }
     else if (position_left > 15  && position_right < 325){
-      motor2run(0);
-      motor1run(lfSpeed);      
+      motor1run(0);
+      motor2run(lfSpeed);      
     }
     else if (position_left < 15 && position_right > 325){
-      motor2run(lfSpeed);
-      motor1run(0);      
+      motor1run(lfSpeed);
+      motor2run(0);      
     }
     else{
       motor2run(0);
@@ -1809,7 +1833,7 @@ void Turnleft(){
     }
   }
   motor2run(0);
-  motor1run(0);   
+  motor1run(0); 
 }
 
 //identify junction left(1) or right(2) or straight(0)

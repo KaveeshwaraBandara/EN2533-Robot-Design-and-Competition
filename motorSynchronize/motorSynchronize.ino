@@ -80,9 +80,9 @@ const int pickBoxLed = 6;  //LED for task 2 virtual box pickup indication
 
 // Constants for encoders
 const int EN_LEFT_A_PIN = 2; 
-const int EN_LEFT_B_PIN = 22; 
-const int EN_RIGHT_A_PIN = 3; 
-const int EN_RIGHT_B_PIN = 23; 
+const int EN_LEFT_B_PIN = 3; 
+const int EN_RIGHT_A_PIN = 18; 
+const int EN_RIGHT_B_PIN = 19; 
 #define CPR 225          // Encoder Pulses Per Revolution
 #define WHEEL_DIAMETER 0.064 // Wheel diameter in meters (example: 6.5 cm)
 
@@ -92,14 +92,15 @@ volatile int position_left = 0;                       // Encoder position (count
 volatile int position_right = 0;   
 
 // PID control parameters
-float KpEncoder = 2.0;  // Proportional gain
+float KpEncoder = 8.0;  // Proportional gain
 float KiEncoder = 0.5;  // Integral gain
-float KdEncoder = 1.0;  // Derivative gain
+float KdEncoder = 4.0;  // Derivative gain
 
 // Speed control parameters
-int basePWM = 150; // Base PWM value for motors
+int basePWM = 80; // Base PWM value for motors
 float integral = 0.0;
 float prevError = 0.0;
+int baseleftPWM = basePWM;
 
 // Variables for speed calculation
 volatile int prev_position_left = 0;
@@ -201,7 +202,7 @@ void setup() {
 }
 
 void loop() {
-  synchronizeMotorSpeeds(1);
+  synchronizeMotorSpeeds(1) ;
 }
 
 
@@ -210,40 +211,47 @@ void synchronizeMotorSpeeds(int forward) {        //foward - 1 backward - 0
     unsigned long currentTime = millis();
     unsigned long deltaTime = currentTime - prevPIDTime;
 
-    if (deltaTime >= 10) { // Update every 10 ms
+    if (deltaTime >= 100) { // Update every 100 ms
         prevPIDTime = currentTime;
 
         // Calculate speeds
         noInterrupts(); // Prevent ISR interference
-        int delta_left = position_left - prev_position_left;
-        int delta_right = position_right - prev_position_right;
-        prev_position_left = position_left;
-        prev_position_right = position_right;
-        interrupts();
-
+        //int delta_left = position_left - prev_position_left;
+        //int delta_right = position_right - prev_position_right;
+        
+        
         // Speed (in m/s)
-        speed_left = (delta_left / (float)CPR) * CIRCUMFERENCE / (deltaTime / 1000.0);
-        speed_right = (delta_right / (float)CPR) * CIRCUMFERENCE / (deltaTime / 1000.0);
+        //speed_left = (delta_left / (float)CPR) * CIRCUMFERENCE / (deltaTime / 1000.0);
+        //speed_right = (delta_right / (float)CPR) * CIRCUMFERENCE / (deltaTime / 1000.0);
 
         // PID calculation
-        float error = speed_left - speed_right;
+        float error = position_right - position_left;
         integral += error * deltaTime / 1000.0;
         float derivative = (error - prevError) / (deltaTime / 1000.0);
         prevError = error;
 
-        float correction = KpEncoder * error + KiEncoder * integral + KdEncoder * derivative;
+        prev_position_left = position_left;
+        prev_position_right = position_right;
+        interrupts();
 
+
+        float correction = (KpEncoder * error + KiEncoder * integral + KdEncoder * derivative)/100;
+        baseleftPWM += (int)correction;
         // Calculate motor PWM values
-        int left_pwm = constrain(basePWM, 0, 255); // Base PWM for left motor
-        int right_pwm = constrain(basePWM + correction, 0, 255); // Adjusted PWM for right motor
+        int left_pwm = constrain(baseleftPWM, 0, 255); // Base PWM for left motor
+        int right_pwm = constrain(basePWM, 0, 255); // Adjusted PWM for right motor
 
         // Set motor directions
         if (forward == 1) {
-            digitalWrite(AIN1, HIGH);
+            digitalWrite(AIN1, HIGH);  
             digitalWrite(BIN1, HIGH);
-        } else {
             digitalWrite(AIN2, LOW);
             digitalWrite(BIN2, LOW);
+        } else {
+            digitalWrite(AIN2, HIGH);
+            digitalWrite(BIN2, HIGH);
+            digitalWrite(AIN1, LOW);  
+            digitalWrite(BIN1, LOW);
         }
 
         // Set motor speeds

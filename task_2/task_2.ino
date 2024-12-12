@@ -32,7 +32,7 @@ unsigned int numSensors = 7;      // Enter number of sensors as 5 or 7
 int P, D, I, previousError, PIDvalue;
 double error = 0.00;
 int lsp, rsp;
-int lfSpeed = 70;
+int lfSpeed = 90;
 int currentSpeed = 30;
 int sensorWeight[10] = {5, 4, 2, 1, 0, 0, -1, -2, -4, -5};
 int activeSensors;
@@ -80,9 +80,9 @@ const int pickBoxLed = 6;  //LED for task 2 virtual box pickup indication
 
 // Constants for encoders
 const int EN_LEFT_A_PIN = 2; 
-const int EN_LEFT_B_PIN = 22; 
-const int EN_RIGHT_A_PIN = 3; 
-const int EN_RIGHT_B_PIN = 23; 
+const int EN_LEFT_B_PIN = 3; 
+const int EN_RIGHT_A_PIN = 18; 
+const int EN_RIGHT_B_PIN = 19; 
 #define CPR 225          // Encoder Pulses Per Revolution
 #define WHEEL_DIAMETER 0.064 // Wheel diameter in meters (example: 6.5 cm)
 
@@ -190,9 +190,73 @@ void setup() {
   display.setTextColor(WHITE);
 
   
-  calibrate();
+  //calibrate();
 }
 void loop() {
-  // put your main code here, to run repeatedly:
+  position_left = 0;
+  position_right = 0;  
+  while (position_left < 325 || position_right < 15 ){
+    display.clearDisplay();
+    display.setCursor(0, 10);
+    display.println("pos_left =");
+    display.println(position_left);
+    display.println("pos_right =");
+    display.println(position_right);
+    display.display(); 
+    if (position_left < 325 && position_right < 15){
+      motor2run(lfSpeed);
+      motor1run(lfSpeed);
+    }
+    else if (position_left < 325 && position_right > 15){
+      motor1run(lfSpeed);
+      motor2run(0);      
+    }
+    else if (position_left > 325 && position_right < 15){
+      motor1run(0);
+      motor2run(lfSpeed);      
+    }
+    else{
+      motor2run(0);
+      motor1run(0);   
+    }
+  }
+  motor2run(0);
+  motor1run(0);  
+  delay(5000); 
+}
 
+//Function to run Motor 1
+void motor1run(int motorSpeed) {
+  motorSpeed = constrain(motorSpeed, -255, 255);
+  if (motorSpeed > 0) {
+    digitalWrite(AIN1, 1);
+    digitalWrite(AIN2, 0);
+    analogWrite(PWMA, motorSpeed);
+  } else if (motorSpeed < 0) {
+    digitalWrite(AIN1, 0);
+    digitalWrite(AIN2, 1);
+    analogWrite(PWMA, abs(motorSpeed));
+  } else {
+    digitalWrite(AIN1, 1);
+    digitalWrite(AIN2, 1);
+    analogWrite(PWMA, 0);
+  }
+}
+
+//Function to run Motor 2
+void motor2run(int motorSpeed) {
+  motorSpeed = constrain(motorSpeed, -255, 255);
+  if (motorSpeed > 0) {
+    digitalWrite(BIN1, 1);
+    digitalWrite(BIN2, 0);
+    analogWrite(PWMB, motorSpeed);
+  } else if (motorSpeed < 0) {
+    digitalWrite(BIN1, 0);
+    digitalWrite(BIN2, 1);
+    analogWrite(PWMB, abs(motorSpeed));
+  } else {
+    digitalWrite(BIN1, 1);
+    digitalWrite(BIN2, 1);
+    analogWrite(PWMB, 0);
+  }
 }
