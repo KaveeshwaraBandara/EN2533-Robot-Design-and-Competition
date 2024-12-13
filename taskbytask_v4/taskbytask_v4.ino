@@ -414,7 +414,6 @@ void task1() {
 void task2() {
   int colr;
   int wall = openWall();                            //first wall = 0 second wall = 1
-  vBoxPosition = 4;
   wall = 1;
   if(vBoxPosition == 0){                        //8,9 - right 0,1- left
     uTurn();
@@ -462,7 +461,7 @@ void task2() {
       moveBack();
       inversejump();
       moveBack();
-      inversejump();
+      //inversejump();
       moveForVB0();
 
     //   do{
@@ -1171,7 +1170,7 @@ void task2() {
 
       while(true){
         readLine();
-        if(sensorArray[0] == 1 && sensorArray[1] == 1 && sensorArray[8] == 1 && sensorArray[9] == 1){
+        if(sensorArray[0] == 1 && sensorArray[1] == 1){
           break;
         }
         linefollow();
@@ -2569,7 +2568,7 @@ int openWall(){
     
     Turnleft();
 
-    jump();
+    avoidjunc();
 
     while(true){
       readLine();
@@ -2583,7 +2582,7 @@ int openWall(){
     motor1run(0); 
 
     Turnleft();
-    jump();
+    avoidjunc();
 
     while(true){
       readLine();
@@ -2961,15 +2960,20 @@ int sensorCount(){
 
 void moveForVB0(){
     int colr;
+    motor2run(0);
+    motor1run(0);
+    
     delay(500);
     placeBox();
     delay(500);
 
-    inversejump();
+    
+
+    uTurn();
 
     while(true){
-      synchronizeMotorSpeeds(0);
-      if(sensorArray[0]==1 && sensorArray[1]==1){
+      linefollow();
+      if(sensorArray[8]==1 && sensorArray[9]==1){
         break;
       }
     }
@@ -2977,7 +2981,7 @@ void moveForVB0(){
   motor2run(0);
   motor1run(0);
 
-  Turnleft();
+  Turnright();
 
   avoidjunc();
 
@@ -3017,7 +3021,12 @@ void moveForVB0(){
       }
     }
 
-    pickBox();
+    motor2run(0);
+      motor1run(0);
+
+      delay(500);
+      pickBox();
+      delay(500);
     
     while(true){
       colr = detectcolour();
