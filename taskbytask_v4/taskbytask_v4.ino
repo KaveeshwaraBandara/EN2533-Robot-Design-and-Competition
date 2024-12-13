@@ -1593,7 +1593,7 @@ void task8(){
 bool barcodeReadComplete() {
   if(currentSize >= 3){
     if (barCode[currentSize-1]==barCode[currentSize-2]&& barCode[currentSize-2] == barCode[currentSize-3]){                 //check the flag for end the Barcode
-    vBoxPosition = binaryToDecimal(barCode[currentSize], 12);    //calculate the virtual box position for task 2 (check do i need to replace the value in array to 10)
+    vBoxPosition = binaryToDecimal(barCode, currentSize)%5;    //calculate the virtual box position for task 2 (check do i need to replace the value in array to 10)
     display.clearDisplay();
     display.setCursor(0, 10);
     display.print("Barcode =");
@@ -1828,12 +1828,21 @@ void motor2run(int motorSpeed) {
 }
 
 //check this (Got from chatgpt)s
-int binaryToDecimal(int binary[], int length) {
-  int decimal = 0;
-  for (int i = 0; i < length; i++) {
-    decimal = decimal * 2 + binary[i];  // Left shift and add the current binary bit
+int binaryToDecimal(int arr[], int size) {
+int decimalValue = 0;
+  int effectiveSize = size - 3; // Omit last 3 digits
+  int biarr[effectiveSize];
+  for (int i = 0; i < effectiveSize; i++)
+  {
+    biarr[i] = arr[i];
   }
-  return decimal;
+
+  // Convert the binary array (excluding the last 3 digits) to a decimal value
+  for (int i = 0; i < effectiveSize; i++) {
+    decimalValue = (decimalValue << 1) | biarr[i];
+  }
+
+  return decimalValue;
 }
 
 //turn right using encoders
