@@ -18,10 +18,10 @@
 int currentState = STATE_TASK1;
 
 //Pin definitions for the L298N Motor Driver
-#define AIN1 16
-#define BIN1 15
-#define AIN2 0
-#define BIN2 1
+#define AIN1 8
+#define BIN1 7
+#define AIN2 9
+#define BIN2 12
 #define PWMA 10
 #define PWMB 11
 
@@ -33,12 +33,12 @@ unsigned int numSensors = 10;      // Enter number of sensors as 5 or 7
 int P, D, I, previousError, PIDvalue;
 double error = 0.00;
 int lsp, rsp;
-int lfSpeed = 70;
-int currentSpeed = 70;
+int lfSpeed = 80;
+int currentSpeed = 80;
 int sensorWeight[10] = {5, 4, 2, 1, 0, 0, -1, -2, -4, -5};
 int activeSensors;
-float Kp = 0.007;
-float Kd = 0.005;
+float Kp = 15;
+float Kd = 5;
 float Ki = 0.00;
 
 int onLine = 1;
@@ -101,7 +101,7 @@ float KiEncoder = 0.5;  // Integral gain
 float KdEncoder = 4.0;  // Derivative gain
 
 // Speed control parameters
-float basePWM = 60;             // Base PWM value
+float basePWM = 65;             // Base PWM value
 float integral = 0.0;
 float prevError = 0.0;
 int baseleftPWM = basePWM;
@@ -124,8 +124,8 @@ int distance2 = 0;
 int distance3 = 0;
 
 //ultrasonic
-const int trig_pin = 8;
-const int echo_pin = 9;
+const int trig_pin = 5;
+const int echo_pin = 6;
 float timing = 0.0;
 float distance = 0.0;
 
@@ -253,7 +253,7 @@ pinMode(SHT_LOX1, OUTPUT);
   
   
   Serial.println(F("Starting..."));
-  setID();
+  //setID();
 
   
   calibrate();
@@ -391,6 +391,17 @@ void task1() {
   //Transition to Task 2 after barcode is read
   if (barcodeReadComplete()) {
     currentState = STATE_TASK2;
+    digitalWrite(53,LOW);
+    
+    motor2run(0);
+    motor1run(0);
+    delay(1000);
+    for(int i=0; i<vBoxPosition;i++){
+      digitalWrite(53,HIGH);
+      delay(1000);
+      digitalWrite(53,LOW);
+      delay(1000);
+    }
     motor2run(0);
     motor1run(0); 
   }
@@ -401,6 +412,8 @@ void task1() {
 void task2() {
   int colr;
   int wall = openWall();                            //first wall = 0 second wall = 1
+  vBoxPosition = 2;
+  wall = 1;
   if(vBoxPosition == 0){                        //8,9 - right 0,1- left
     uTurn();
     avoidjunc();
@@ -421,7 +434,9 @@ void task2() {
     delay(500);
 
     if(wall == 0){
+      inversejump();
       moveBack();
+      inversejump();
       moveForVB0();      
     
     // while(true){
@@ -442,9 +457,11 @@ void task2() {
     }
     
     else if(wall == 1){
+      inversejump();
       moveBack();
+      inversejump();
       moveBack();
-      
+      inversejump();
       moveForVB0();
 
     //   do{
@@ -465,6 +482,7 @@ void task2() {
   else if(vBoxPosition == 1){
     if(wall == 0){
       Turnright();
+      avoidjunc();
 
       while(true){
         readLine();
@@ -477,8 +495,11 @@ void task2() {
       motor2run(0);
       motor1run(0);
 
+      delay(500);
       pickBox();
+      delay(500);
 
+      inversejump();
       moveBackColour();
 
       placeBox();
@@ -486,6 +507,21 @@ void task2() {
     }
     else{
       uTurn();
+      avoidjunc();
+
+      while(true){
+        readLine();
+        if(sensorArray[0] == 1 && sensorArray[1] == 1){
+          break;
+        }
+        linefollow();
+      }
+
+      motor2run(0);
+      motor1run(0);
+
+      Turnleft();
+      avoidjunc();
 
       while(true){
         readLine();
@@ -500,18 +536,7 @@ void task2() {
 
       Turnleft();
 
-      while(true){
-        readLine();
-        if(sensorArray[0] == 1 && sensorArray[1] == 1){
-          break;
-        }
-        linefollow();
-      }
-
-      motor2run(0);
-      motor1run(0);
-
-      Turnleft();
+      avoidjunc();
 
       while(true){
         readLine();
@@ -524,7 +549,11 @@ void task2() {
       motor2run(0);
       motor1run(0);
 
+      delay(500);
       pickBox();
+      delay(500);
+
+      jump();
 
       while(true){
         readLine();
@@ -533,6 +562,8 @@ void task2() {
         }
         linefollow();
       }
+
+      jump();
 
       while(true){
         readLine();
@@ -545,11 +576,15 @@ void task2() {
       motor2run(0);
       motor1run(0);
 
+      delay(500);
       placeBox();
+      delay(500);
 
+      inversejump();
       moveBackAbove();
 
       Turnleft();
+      avoidjunc();
 
       while(true){
         readLine();
@@ -563,6 +598,7 @@ void task2() {
       motor1run(0);
 
       Turnright();
+      avoidjunc();
 
       while(true){
         readLine();
@@ -576,6 +612,7 @@ void task2() {
       motor1run(0);
 
       Turnright();
+      avoidjunc();
 
       while(true){
         readLine();
@@ -601,8 +638,11 @@ void task2() {
       // motor2run(0);
       // motor1run(0);
 
+      delay(500);
       pickBox();
+      delay(500);
 
+      inversejump();
       moveBackColour();
 
       placeBox();
@@ -613,6 +653,7 @@ void task2() {
   else if(vBoxPosition == 2){
     if(wall == 0){
       Turnright();
+      avoidjunc();
       
       while(true){
         readLine();
@@ -627,6 +668,8 @@ void task2() {
 
       Turnleft();
 
+      avoidjunc();
+
       while(true){
         readLine();
         if(sensorArray[0] == 1 && sensorArray[1] == 1){
@@ -638,15 +681,22 @@ void task2() {
       motor2run(0);
       motor1run(0);
 
+      delay(500);
       pickBox();
+      delay(500);
 
+      inversejump();
       moveBackAbove();
 
+      delay(500);
       placeBox();
+      delay(500);
 
+      inversejump();
       moveBackAbove();
 
       Turnleft();
+      avoidjunc();
 
       while(true){
         readLine();
@@ -660,6 +710,7 @@ void task2() {
       motor1run(0);
 
       Turnright();
+      avoidjunc();
 
       while(true){
         readLine();
@@ -673,6 +724,7 @@ void task2() {
       motor1run(0);
 
       Turnright();
+      avoidjunc();
 
       while(true){
         readLine();
@@ -684,18 +736,22 @@ void task2() {
 
       motor2run(0);
       motor1run(0);
-      
+      delay(500);
       pickBox();
+      delay(500);
 
+      inversejump();
       moveBackColour();
 
+      delay(500);
       placeBox();
+      delay(500);
       placed = 1;
     }
 
     else{
       Turnright();
-      
+      avoidjunc();
       while(true){
         readLine();
         if(sensorArray[0] == 1 && sensorArray[1] == 1 && sensorArray[8] == 1 && sensorArray[9] == 1){
@@ -708,6 +764,7 @@ void task2() {
       motor1run(0);
 
       Turnleft();
+      avoidjunc();
 
       while(true){
         readLine();
@@ -720,7 +777,11 @@ void task2() {
       motor2run(0);
       motor1run(0);
 
+      delay(500);
       pickBox();
+      delay(500);
+
+      jump();
 
       while(true){
         readLine();
@@ -733,10 +794,15 @@ void task2() {
       motor2run(0);
       motor1run(0);
 
+      delay(500);
       placeBox();
+      delay(500);
       
+      inversejump();
       moveBackAbove();
+      inversejump();
       Turnleft();
+      avoidjunc();
 
       while(true){
         readLine();
@@ -750,6 +816,7 @@ void task2() {
       motor1run(0);
 
       Turnright();
+      avoidjunc();
 
       while(true){
         readLine();
@@ -763,6 +830,7 @@ void task2() {
       motor1run(0);
 
       Turnright(); 
+      avoidjunc();
 
       while(true){
         readLine();
@@ -775,11 +843,16 @@ void task2() {
       motor2run(0);
       motor1run(0);
 
+      delay(500);
       pickBox();
+      delay(500);
 
+      inversejump();
       moveBackColour();
 
+      delay(500);
       placeBox();
+      delay(500);
       placed = 1;
     }
   }
@@ -787,6 +860,7 @@ void task2() {
   else if(vBoxPosition == 3){
     if(wall == 0){
       Turnright();
+      avoidjunc();
 
       while(true){
         readLine();
@@ -800,6 +874,7 @@ void task2() {
       motor1run(0);
 
       Turnleft();
+      avoidjunc();
 
       while(true){
         readLine();
@@ -808,6 +883,8 @@ void task2() {
         }
         linefollow();
       }
+
+      jump();
 
       while(true){
         readLine();
@@ -820,16 +897,24 @@ void task2() {
       motor2run(0);
       motor1run(0);
 
+      delay(500);
       pickBox();
+      delay(500);
 
+      inversejump();
       moveBackAbove();
+      inversejump();
       moveBackAbove();
       
+      delay(500);
       placeBox();
+      delay(500);
 
+      inversejump();
       moveBackAbove();
 
       Turnleft();
+      avoidjunc();
 
       while(true){
         readLine();
@@ -843,6 +928,7 @@ void task2() {
       motor1run(0);
 
       Turnright();
+      avoidjunc();
 
       while(true){
         readLine();
@@ -856,6 +942,7 @@ void task2() {
       motor1run(0);
 
       Turnright();
+      avoidjunc();
 
       while(true){
         readLine();
@@ -868,14 +955,22 @@ void task2() {
       motor2run(0);
       motor1run(0);
       
+      delay(500);
       pickBox();
+      delay(500);
 
+      inversejump();
       moveBackColour();
 
+      delay(500);
       placeBox();
+      delay(500);
+
       placed = 1;
     }
     else{
+      jump();
+
       while(true){
         readLine();
         if(sensorArray[0] == 1 && sensorArray[1] == 1 && sensorArray[8] == 1 && sensorArray[9] == 1){
@@ -888,6 +983,7 @@ void task2() {
       motor1run(0);
 
       Turnright();
+      avoidjunc();
 
       while(true){
         readLine();
@@ -900,11 +996,16 @@ void task2() {
       motor2run(0);
       motor1run(0);
       
+      delay(500);
       pickBox();
+      delay(500);
 
+      inversejump();
       moveBackColour();
 
+      delay(500);
       placeBox();
+      delay(500);
       placed = 1;
     }
 
@@ -913,6 +1014,7 @@ void task2() {
   else if(vBoxPosition == 4){
     if(wall == 0){
       Turnright();
+      avoidjunc();
 
       while(true){
         readLine();
@@ -926,6 +1028,7 @@ void task2() {
       motor1run(0);
 
       Turnleft();
+      avoidjunc();
 
       while(true){
         readLine();
@@ -935,6 +1038,8 @@ void task2() {
         linefollow();
       }
 
+      jump();
+
       while(true){
         readLine();
         if(sensorArray[0] == 1 && sensorArray[1] == 1){
@@ -942,6 +1047,8 @@ void task2() {
         }
         linefollow();
       }
+
+      jump();
 
       while(true){
         readLine();
@@ -954,17 +1061,26 @@ void task2() {
       motor2run(0);
       motor1run(0);
 
+      delay(500);
       pickBox();
+      delay(500);
 
+      inversejump();
       moveBackAbove();
+      inversejump();
       moveBackAbove();
+      inversejump();
       moveBackAbove();
 
+      delay(500);
       placeBox();
+      delay(500);
 
+      inversejump();
       moveBackAbove();
 
       Turnleft();
+      avoidjunc();
 
       while(true){
         readLine();
@@ -978,6 +1094,7 @@ void task2() {
       motor1run(0);
 
       Turnright();
+      avoidjunc();
 
       while(true){
         readLine();
@@ -991,6 +1108,7 @@ void task2() {
       motor1run(0);
 
       Turnright();
+      avoidjunc();
 
       while(true){
         readLine();
@@ -1003,15 +1121,22 @@ void task2() {
       motor2run(0);
       motor1run(0);
       
+      delay(500);
       pickBox();
+      delay(500);
 
+      inversejump();
       moveBackColour();
 
+      delay(500);
       placeBox();
+      delay(500);
+
       placed = 1;
     }
     else{
       Turnright();
+      avoidjunc();
 
       while(true){
         readLine();
@@ -1025,6 +1150,7 @@ void task2() {
       motor1run(0);
 
       Turnleft();
+      avoidjunc();
 
       while(true){
         readLine();
@@ -1034,6 +1160,8 @@ void task2() {
         linefollow();
       }
 
+      jump();
+
       while(true){
         readLine();
         if(sensorArray[0] == 1 && sensorArray[1] == 1){
@@ -1041,6 +1169,8 @@ void task2() {
         }
         linefollow();
       }
+
+      jump();
 
       while(true){
         readLine();
@@ -1053,14 +1183,21 @@ void task2() {
       motor2run(0);
       motor1run(0);
 
+      delay(500);
       pickBox();
+      delay(500);
+      inversejump();
       moveBackAbove();
       
+      delay(500);
       placeBox();
+      delay(500);
 
+      inversejump();
       moveBackAbove(); 
       
       Turnleft();
+      avoidjunc();
 
       while(true){
         readLine();
@@ -1074,6 +1211,7 @@ void task2() {
       motor1run(0);
 
       Turnright();
+      avoidjunc();
 
       while(true){
         readLine();
@@ -1086,7 +1224,8 @@ void task2() {
       motor2run(0);
       motor1run(0);
 
-      Turnright(); 
+      Turnright();
+      avoidjunc(); 
 
       while(true){
         readLine();
@@ -1099,11 +1238,16 @@ void task2() {
       motor2run(0);
       motor1run(0);
 
+      delay(500);
       pickBox();
+      delay(500);
 
+      inversejump();
       moveBackColour();
 
+      delay(500);
       placeBox();
+      delay(500);
       placed = 1;
     }
   }
@@ -1881,7 +2025,7 @@ void calibrate() {
     maxValues[i] = analogRead(i);
   }
 
-  for (int i = 0; i < 3000; i++) {
+  for (int i = 0; i < 1000; i++) {
     motor1run(100);
     motor2run(-100);
 
@@ -1966,8 +2110,9 @@ void linefollow() {
   motor2run(rsp);
 }
 
-// Function to synchronize motor speeds with direction control(Chatgpt) 
-void synchronizeMotorSpeeds(int forward) {        //foward - 1 backward - 0
+// Function to synchronize motor speeds with direction control(Chatgpt)
+void synchronizeMotorSpeeds(int forward) { 
+        //foward - 1 backward - 0
     unsigned long currentTime = millis();
     unsigned long deltaTime = currentTime - prevPIDTime;
 
@@ -1976,8 +2121,8 @@ void synchronizeMotorSpeeds(int forward) {        //foward - 1 backward - 0
 
         // Calculate speeds
         noInterrupts(); // Prevent ISR interference
-        //int delta_left = position_left - prev_position_left;
-        //int delta_right = position_right - prev_position_right;
+        int delta_left = position_left - prev_position_left;
+        int delta_right = position_right - prev_position_right;
         
         
         // Speed (in m/s)
@@ -1985,7 +2130,7 @@ void synchronizeMotorSpeeds(int forward) {        //foward - 1 backward - 0
         //speed_right = (delta_right / (float)CPR) * CIRCUMFERENCE / (deltaTime / 1000.0);
 
         // PID calculation
-        float error = position_right - position_left;
+        float error = abs(position_right) - abs(position_left);
         integral += error * deltaTime / 1000.0;
         float derivative = (error - prevError) / (deltaTime / 1000.0);
         prevError = error;
@@ -1998,8 +2143,8 @@ void synchronizeMotorSpeeds(int forward) {        //foward - 1 backward - 0
         float correction = (KpEncoder * error + KiEncoder * integral + KdEncoder * derivative)/100;
         baseleftPWM += (int)correction;
         // Calculate motor PWM values
-        int left_pwm = constrain(baseleftPWM, 0, 255); // Base PWM for left motor
-        int right_pwm = constrain(basePWM, 0, 255); // Adjusted PWM for right motor
+        int left_pwm = constrain(baseleftPWM, 0, 120); // Base PWM for left motor
+        int right_pwm = constrain(basePWM, 0, 120); // Adjusted PWM for right motor
 
         // Set motor directions
         if (forward == 1) {
@@ -2026,7 +2171,67 @@ void synchronizeMotorSpeeds(int forward) {        //foward - 1 backward - 0
         Serial.print(" m/s, Error: ");
         Serial.println(error);
     }
-}
+} 
+// void synchronizeMotorSpeeds(int forward) {        //foward - 1 backward - 0
+//     unsigned long currentTime = millis();
+//     unsigned long deltaTime = currentTime - prevPIDTime;
+
+//     if (deltaTime >= 100) { // Update every 100 ms
+//         prevPIDTime = currentTime;
+
+//         // Calculate speeds
+//         noInterrupts(); // Prevent ISR interference
+//         //int delta_left = position_left - prev_position_left;
+//         //int delta_right = position_right - prev_position_right;
+        
+        
+//         // Speed (in m/s)
+//         //speed_left = (delta_left / (float)CPR) * CIRCUMFERENCE / (deltaTime / 1000.0);
+//         //speed_right = (delta_right / (float)CPR) * CIRCUMFERENCE / (deltaTime / 1000.0);
+
+//         // PID calculation
+//         float error = position_right - position_left;
+//         integral += error * deltaTime / 1000.0;
+//         float derivative = (error - prevError) / (deltaTime / 1000.0);
+//         prevError = error;
+
+//         prev_position_left = position_left;
+//         prev_position_right = position_right;
+//         interrupts();
+
+
+//         float correction = (KpEncoder * error + KiEncoder * integral + KdEncoder * derivative)/100;
+//         baseleftPWM += (int)correction;
+//         // Calculate motor PWM values
+//         int left_pwm = constrain(baseleftPWM, 0, 255); // Base PWM for left motor
+//         int right_pwm = constrain(basePWM, 0, 255); // Adjusted PWM for right motor
+
+//         // Set motor directions
+//         if (forward == 1) {
+//             digitalWrite(AIN1, HIGH);  
+//             digitalWrite(BIN1, HIGH);
+//             digitalWrite(AIN2, LOW);
+//             digitalWrite(BIN2, LOW);
+//         } else {
+//             digitalWrite(AIN2, HIGH);
+//             digitalWrite(BIN2, HIGH);
+//             digitalWrite(AIN1, LOW);  
+//             digitalWrite(BIN1, LOW);
+//         }
+
+//         // Set motor speeds
+//         analogWrite(PWMA, left_pwm);
+//         analogWrite(PWMB, right_pwm);
+
+//         // Debugging output
+//         Serial.print("Speed Left: ");
+//         Serial.print(speed_left);
+//         Serial.print(" m/s, Speed Right: ");
+//         Serial.print(speed_right);
+//         Serial.print(" m/s, Error: ");
+//         Serial.println(error);
+//     }
+// }
 
 //Function to run Motor 1
 void motor1run(int motorSpeed) {
@@ -2210,7 +2415,7 @@ int Junction(){
 void avoidjunc(){
   position_left = 0;
   position_right = 0;
-  while(position_left < 40 && position_right < 40){
+  while(position_left < 110 && position_right < 110){
     readLine();
     linefollow();
   }
@@ -2233,7 +2438,7 @@ void inversejump(){
   while(position_left > -110 || position_right > -110){
     if (position_left > -110 && position_right > -110){
       motor2run(-lfSpeed);
-      motor1run(lfSpeed);
+      motor1run(-lfSpeed);
     }
     else if (position_left > -110 && position_right < -110){
       motor1run(-lfSpeed);
@@ -2327,7 +2532,8 @@ int openWall(){
     delay(500);
 
     uTurn();
-
+    delay(500);
+    
     avoidjunc();
     
     while(true){
@@ -2357,10 +2563,11 @@ int openWall(){
     motor1run(0); 
 
     Turnleft();
+    jump();
 
     while(true){
       readLine();
-      if(sensorArray[0] == 1 && sensorArray[1] == 1||sensorArray[8] == 1 && sensorArray[9] == 1){
+      if(sensorArray[0] == 1 && sensorArray[1] == 1&&sensorArray[8] == 1 && sensorArray[9] == 1){
         break;
       }
       linefollow();
@@ -2370,11 +2577,22 @@ int openWall(){
     motor1run(0);
 
     Turnright();
+    delay(500);
 
     if(detectWall()){
+      digitalWrite(53,HIGH);
+      delay(2000);
+      digitalWrite(53,LOW);
       return 0;
     }
     else{
+      digitalWrite(53,HIGH);
+      delay(2000);
+      digitalWrite(53,LOW);
+      delay(1000);
+      digitalWrite(53,HIGH);
+      delay(2000);
+      digitalWrite(53,LOW);
       return 1;
     }
 
@@ -2425,10 +2643,26 @@ int openWall(){
 
     //Turnleft();
 
+    // if(detectWall()){
+    //   return 0;
+    // }
+    // else{
+    //   return 1;
+    // }
     if(detectWall()){
+      digitalWrite(53,HIGH);
+      delay(2000);
+      digitalWrite(53,LOW);
       return 0;
     }
     else{
+      digitalWrite(53,HIGH);
+      delay(2000);
+      digitalWrite(53,LOW);
+      delay(1000);
+      digitalWrite(53,HIGH);
+      delay(2000);
+      digitalWrite(53,LOW);
       return 1;
     }
   }
@@ -2450,8 +2684,8 @@ void uTurn(){
   position_right = 0;  
   while (position_left > -325 || position_right < 325 ){ 
     if (position_left > -325 && position_right < 325){
-      motor2run(lfSpeed);
       motor1run(-lfSpeed);
+      motor2run(lfSpeed);
     }
     else if (position_left < -325  && position_right < 325){
       motor1run(0);
@@ -2468,7 +2702,6 @@ void uTurn(){
   }
   motor2run(0);
   motor1run(0); 
-
 }
 
 //detect the obstacle using ultrasonic return 1 when open and return 0 when close
@@ -2491,9 +2724,9 @@ int detectWall(){
   
     
   if (distance <= 15){
-  	return 0;
-  } else {
   	return 1;
+  } else {
+    return 0;
   }
 }
 
@@ -2503,13 +2736,15 @@ void moveBack(){
   //   readLine();
   //   synchronizeMotorSpeeds(0);
   // }while(sensorArray[0] == 1 && sensorArray[1] == 1||sensorArray[8] == 1 && sensorArray[9] == 1);
-
+  int initialPWM = basePWM;
+  basePWM = 100;
   while(true){
     readLine();
     synchronizeMotorSpeeds(0);
-    if(sensorArray[0] == 1 && sensorArray[1] == 1||sensorArray[8] == 1 && sensorArray[9] == 1){
+    if(sensorArray[0] == 1 && sensorArray[1] == 1 && sensorArray[8] == 1 && sensorArray[9] == 1){
       break;
     }
+  basePWM = initialPWM;
   }
   
   motor2run(0);
