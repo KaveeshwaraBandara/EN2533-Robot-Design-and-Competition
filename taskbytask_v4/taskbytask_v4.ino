@@ -18,10 +18,10 @@
 int currentState = STATE_TASK1;
 
 //Pin definitions for the L298N Motor Driver
-#define AIN1 8
-#define BIN1 7
-#define AIN2 9
-#define BIN2 12
+#define AIN1 16
+#define BIN1 15
+#define AIN2 0
+#define BIN2 1
 #define PWMA 10
 #define PWMB 11
 
@@ -34,7 +34,7 @@ int P, D, I, previousError, PIDvalue;
 double error = 0.00;
 int lsp, rsp;
 int lfSpeed = 70;
-int currentSpeed = 30;
+int currentSpeed = 70;
 int sensorWeight[10] = {5, 4, 2, 1, 0, 0, -1, -2, -4, -5};
 int activeSensors;
 float Kp = 0.007;
@@ -81,7 +81,7 @@ const int pickBoxLed = 53;  //LED for task 2 virtual box pickup indication
 
 // Constants for encoders
 const int EN_LEFT_A_PIN = 2; 
-const int EN_LEFT_B_PIN = 3; 
+const int EN_LEFT_B_PIN = 22; 
 const int EN_RIGHT_A_PIN = 18; 
 const int EN_RIGHT_B_PIN = 19; 
 #define CPR 225          // Encoder Pulses Per Revolution
@@ -124,8 +124,8 @@ int distance2 = 0;
 int distance3 = 0;
 
 //ultrasonic
-const int trig_pin = 4;
-const int echo_pin = 5;
+const int trig_pin = 8;
+const int echo_pin = 9;
 float timing = 0.0;
 float distance = 0.0;
 
