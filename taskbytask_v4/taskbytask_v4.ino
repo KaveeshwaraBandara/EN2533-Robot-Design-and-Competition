@@ -1972,9 +1972,11 @@ int Junction(){
 //avoid junction errors
 void avoidjunc(){
   while(position_left < 110 && position_right < 110){
-    readline();
+    readLine();
     linefollow();
   }
+  motor2run(0);
+  motor1run(0);
 }
 
 //move little bit away from junction
@@ -2017,6 +2019,8 @@ int openWall(){
 
   Turnright();
 
+  avoidjunc();
+
   while(true){
     readLine();
     if(sensorArray[8] == 1 && sensorArray[9] == 1){
@@ -2030,7 +2034,12 @@ int openWall(){
   
   //checking conditions for box position 
   if(vBoxPosition == 0){
+    delay(500);
     pickBox();
+    delay(500);
+
+    avoidjunc();
+
     while(true){
       readLine();
       if(sensorArray[8] == 1 && sensorArray[9] == 1){
@@ -2042,8 +2051,13 @@ int openWall(){
     motor2run(0);
     motor1run(0); 
     
+    delay(500);
     placeBox();
+    delay(500);
+
     uTurn();
+
+    avoidjunc();
     
     while(true){
       readLine();
@@ -2052,8 +2066,13 @@ int openWall(){
       }
       linefollow();
     }
+
+    motor2run(0);
+    motor1run(0); 
     
     Turnleft();
+
+    jump();
 
     while(true){
       readLine();
@@ -2062,6 +2081,9 @@ int openWall(){
       }
       linefollow();
     }
+
+    motor2run(0);
+    motor1run(0); 
 
     Turnleft();
 
@@ -2076,6 +2098,8 @@ int openWall(){
     motor2run(0);
     motor1run(0);
 
+    Turnright();
+
     if(detectWall()){
       return 0;
     }
@@ -2085,6 +2109,8 @@ int openWall(){
 
   }
   else{
+    jump();
+
     while(true){
       readLine();
       if(sensorArray[8] == 1 && sensorArray[9] == 1){
@@ -2096,20 +2122,24 @@ int openWall(){
 
     motor2run(0);
     motor1run(0);
+
     Turnright();
+
+    avoidjunc();
+
   //check if there is a need for move little bit above from junction.. here actually what we do is we avoid the first junction and move foward
-    while(true){
-      readLine();
-      if(sensorArray[8] == 1 && sensorArray[9] == 1){
-        break;
-      }
-      linefollow();
-    }
+    // while(true){
+    //   readLine();
+    //   if(sensorArray[8] == 1 && sensorArray[9] == 1){
+    //     break;
+    //   }
+    //   linefollow();
+    // }
 
-    motor2run(0);
-    motor1run(0);
+    // motor2run(0);
+    // motor1run(0);
 
-    Turnright();
+    // Turnright();
 
     while(true){
       readLine();
@@ -2122,7 +2152,7 @@ int openWall(){
     motor2run(0);
     motor1run(0);
 
-    Turnleft();
+    //Turnleft();
 
     if(detectWall()){
       return 0;
