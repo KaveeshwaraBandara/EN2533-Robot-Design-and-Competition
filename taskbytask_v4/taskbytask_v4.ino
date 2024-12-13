@@ -17,6 +17,18 @@
 
 int currentState = STATE_TASK1;
 
+// const int switch1Pin = 2; 
+// const int switch2Pin = 3; 
+// const int switch3Pin = 4; 
+
+// const int Sled1Pin = 5; 
+// const int Sled2Pin = 6; 
+// const int Sled3Pin = 7; 
+// const int Sled1PinNeg = 5; 
+// const int Sled2PinNeg = 6; 
+// const int Sled3PinNeg = 7; 
+
+
 //Pin definitions for the L298N Motor Driver
 #define AIN1 8
 #define BIN1 7
@@ -52,7 +64,7 @@ int minValues[10], maxValues[10], threshold[10], sensorValue[10], sensorArray[10
 #define S2 5
 #define S3 6
 #define OUT 2
-// #define VCC_color 7
+#define VCC_color 52
 
 int redMin = 17; // Red minimum value
 int redMax = 145; // Red maximum value
@@ -196,6 +208,33 @@ Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, -1);
 void setup() {
   Serial.begin(9600);
 
+  // // Configure switch pins as inputs with pullup resistors
+  // pinMode(switch1Pin, INPUT_PULLUP);
+  // pinMode(switch2Pin, INPUT_PULLUP);
+  // pinMode(switch3Pin, INPUT_PULLUP);
+
+  // // Configure LED pins as outputs
+  // pinMode(Sled1Pin, OUTPUT);
+  // pinMode(Sled2Pin, OUTPUT);
+  // pinMode(Sled3Pin, OUTPUT);
+  // pinMode(Sled1PinNeg, OUTPUT);
+  // pinMode(Sled2PinNeg, OUTPUT);
+  // pinMode(Sled3PinNeg, OUTPUT);
+
+  // int switch1State = digitalRead(switch1Pin); // HIGH if off, LOW if on
+  // int switch2State = digitalRead(switch2Pin);
+  // int switch3State = digitalRead(switch3Pin);
+
+  // // Calculate currentState based on binary representation
+  // currentState = (switch1State == LOW ? 1 : 0) << 2 | 
+  //                (switch2State == LOW ? 1 : 0) << 1 | 
+  //                (switch3State == LOW ? 1 : 0);
+
+  // // Add 1 to match the state numbering
+  // currentState += 1;
+
+
+
   pinMode(EN_LEFT_A_PIN, INPUT_PULLUP);
   pinMode(EN_LEFT_B_PIN, INPUT_PULLUP);
   pinMode(EN_RIGHT_A_PIN, INPUT_PULLUP);
@@ -217,7 +256,7 @@ void setup() {
   pinMode(S1, OUTPUT);
   pinMode(S2, OUTPUT);
   pinMode(S3, OUTPUT);
-  // pinMode(VCC_color, OUTPUT);
+  pinMode(VCC_color, OUTPUT);
   
   // Set Sensor output as input
  pinMode(OUT, INPUT);
@@ -264,6 +303,10 @@ pinMode(SHT_LOX1, OUTPUT);
 }
 
 void loop() {
+
+  //   // Update LEDs to reflect current state
+  // updateLEDs();
+
   switch (currentState) {
     case STATE_TASK1:
       task1();
@@ -1271,6 +1314,9 @@ void task2() {
     }
   }
   if(placed){
+    motor2run(0);
+    motor1run(0);
+    uTurn();
     currentState = STATE_TASK3;
   }  
 }
@@ -1314,54 +1360,116 @@ void task3() {
 
 // Task 4: Dotted line following
 void task4() {
-  int count;
- //if all black we need to move foward until we found white dashed line  
   while(true){
-    count = sensorCount();
-    if(count==0){
-      synchronizeMotorSpeeds(1);
-    }
-    else{
+  int count;
+ //if all black we need to move foward until we found white dashed line
+   readLine();
+  if (currentSpeed < lfSpeed) currentSpeed++;
+  if (onLine == 1) {  //PID LINE FOLLOW
       linefollow();
+      digitalWrite(13, HIGH);
     }
 
-  //condition for state transition
+  else {
+    digitalWrite(13, LOW);
+    motor1run(lsp);
+    motor2run(rsp);
+    }
+  
+  // while(true){
+  //   count = sensorCount();
+  //   if(count==0){
+  //     synchronizeMotorSpeeds(1);
+  //   }
+  //   else{
+  //     linefollow();
+  //   }
+
+  // //condition for state transition
   if(count>7){
     motor2run(0);
     motor1run(0);
     currentState = STATE_TASK5;
     break;
   }
-  }
+  // }
+}
 }
 
 // Task 5: Portal Navigation
 void task5(){
   if(gateDetected()){
-    do{
+    while(true){
       motor2run(0);
       motor1run(0);
-    }while(gateDetected());
-    do{
+      if(gateDetected()){
+        break;
+      }
+    }
+
+    while(true){
       synchronizeMotorSpeeds(1);
-    }while(sensorArray[0] == 1 && sensorArray[1] == 1||sensorArray[8] == 1 && sensorArray[9] == 1);
-    currentState = STATE_TASK6;
-    motor2run(0);
-    motor1run(0);
+      if(sensorArray[0] == 1 && sensorArray[1] == 1||sensorArray[8] == 1 && sensorArray[9] == 1){
+        motor2run(0);
+        motor1run(0);
+        currentState = STATE_TASK6;
+        break;
+      }
+    }
+    // do{
+    //   motor2run(0);
+    //   motor1run(0);
+    // }while(gateDetected());
+    // do{
+    //   synchronizeMotorSpeeds(1);
+    // }while(sensorArray[0] == 1 && sensorArray[1] == 1||sensorArray[8] == 1 && sensorArray[9] == 1);
+    // currentState = STATE_TASK6;
+    // motor2run(0);
+    // motor1run(0);
   }
   else{
-    do{
+    while(true){
       motor2run(0);
       motor1run(0);
-    }while(!gateDetected());
-    do{
-      motor2run(0);
-      motor1run(0);
-    }while(gateDetected());
+      if(!gateDetected()){
+        break;
+      }
+    }
 
-    do{
+    while(true){
+      motor2run(0);
+      motor1run(0);
+      if(gateDetected()){
+        break;
+      }
+    }
+
+    while(true){
       synchronizeMotorSpeeds(1);
-    }while(sensorArray[0] == 1 && sensorArray[1] == 1||sensorArray[8] == 1 && sensorArray[9] == 1);
+      if(sensorArray[0] == 1 && sensorArray[1] == 1||sensorArray[8] == 1 && sensorArray[9] == 1){
+        motor2run(0);
+        motor1run(0);
+        currentState = STATE_TASK6;
+        break;
+      }
+    }
+
+    
+
+    
+
+    // do{
+    //   motor2run(0);
+    //   motor1run(0);
+    // }while(!gateDetected());
+    // do{
+    //   motor2run(0);
+    //   motor1run(0);
+    // }while(gateDetected());
+
+    // do{
+    //   synchronizeMotorSpeeds(1);
+    // }while(sensorArray[0] == 1 && sensorArray[1] == 1||sensorArray[8] == 1 && sensorArray[9] == 1);
     currentState = STATE_TASK6;
     
     motor2run(0);
@@ -2772,46 +2880,46 @@ void moveBack(){
 
 //detect blue(1) or red(2) otherwise return 0 
 int detectcolour(){
-//   digitalWrite(S0, HIGH);
-//   digitalWrite(S1, HIGH);
-//   digitalWrite(VCC_color, HIGH);
+  digitalWrite(S0, HIGH);
+  digitalWrite(S1, HIGH);
+  digitalWrite(VCC_color, HIGH);
 
-//   // Read Red frequency
-//   digitalWrite(S2, LOW);
-//   digitalWrite(S3, LOW);
-//  int  redFrequency = pulseIn(OUT, LOW);
-// //  Serial.print("redFrequency :");
-// //  Serial.print(redFrequency);
-// //  Serial.print("  ");
+  // Read Red frequency
+  digitalWrite(S2, LOW);
+  digitalWrite(S3, LOW);
+ int  redFrequency = pulseIn(OUT, LOW);
+//  Serial.print("redFrequency :");
+//  Serial.print(redFrequency);
+//  Serial.print("  ");
 
-//   // Read Blue frequency
-//   digitalWrite(S2, LOW);
-//   digitalWrite(S3, HIGH);
-//   int blueFrequency = pulseIn(OUT, LOW);
-// //  Serial.print("blueFrequency :");
-// //  Serial.println(blueFrequency);
+  // Read Blue frequency
+  digitalWrite(S2, LOW);
+  digitalWrite(S3, HIGH);
+  int blueFrequency = pulseIn(OUT, LOW);
+//  Serial.print("blueFrequency :");
+//  Serial.println(blueFrequency);
 
-//   // Determine the color
-//   if (redFrequency < 20 && blueFrequency < 20) {
-//     return 0; // White
-//   } else if (blueFrequency < redFrequency && blueFrequency < 40) {
-//     digitalWrite(S0, LOW);
-//     digitalWrite(S1, LOW);
-//     digitalWrite(S0, LOW);
-//     digitalWrite(S1, LOW);
-//     digitalWrite(VCC_color, LOW);
-//     return 1; // Blue
-//   } else if(blueFrequency > redFrequency && redFrequency < 40){
-//     digitalWrite(S0, LOW);
-//     digitalWrite(S1, LOW);
-//     digitalWrite(S0, LOW);
-//     digitalWrite(S1, LOW);
-//     digitalWrite(VCC_color, LOW);
-//     return 2; // Red
-//   }
-//   else if (redFrequency > 40 && blueFrequency > 40){
-//     return 0; // Black
-// }
+  // Determine the color
+  if (redFrequency < 20 && blueFrequency < 20) {
+    return 0; // White
+  } else if (blueFrequency < redFrequency && blueFrequency < 40) {
+    digitalWrite(S0, LOW);
+    digitalWrite(S1, LOW);
+    digitalWrite(S0, LOW);
+    digitalWrite(S1, LOW);
+    digitalWrite(VCC_color, LOW);
+    return 1; // Blue
+  } else if(blueFrequency > redFrequency && redFrequency < 40){
+    digitalWrite(S0, LOW);
+    digitalWrite(S1, LOW);
+    digitalWrite(S0, LOW);
+    digitalWrite(S1, LOW);
+    digitalWrite(VCC_color, LOW);
+    return 2; // Red
+  }
+  else if (redFrequency > 40 && blueFrequency > 40){
+    return 0;// Black
+}
 }
 
 
@@ -2828,7 +2936,7 @@ void moveBackColour(){
     synchronizeMotorSpeeds(0);
     detected = detectcolour();
 
-    if(detected==0){
+    if(detected == 1|| detected == 2){
       break;
     }
   }
@@ -3036,7 +3144,14 @@ void moveForVB0(){
         break;
       }
     }
+
+    motor2run(0);
+    motor1run(0);
+
+    delay(500);
     placeBox();
+    delay(500);
+
     placed = 1;
 }
 
@@ -3139,3 +3254,15 @@ void read_quad_sensors() {
   }
   Serial.println();
 }
+
+
+// void updateLEDs() {
+//   int stateBinary = currentState - 1; // Subtract 1 to get binary (0 to 7)
+
+//   digitalWrite(Sled1Pin, (stateBinary & 0b100) ? HIGH : LOW); // MSB
+//   digitalWrite(Sled2Pin, (stateBinary & 0b010) ? HIGH : LOW); // Middle bit
+//   digitalWrite(Sled3Pin, (stateBinary & 0b001) ? HIGH : LOW); // LSB
+//   digitalWrite(Sled1PinNeg, LOW);
+//   digitalWrite(Sled2PinNeg, LOW);
+//   digitalWrite(Sled3PinNeg, LOW);
+// }
