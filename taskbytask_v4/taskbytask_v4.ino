@@ -1969,6 +1969,13 @@ int Junction(){
   }
 }
 
+void avoidjunc(){
+  while(position_left < 110 && position_right < 110){
+    readline();
+    linefollow();
+  }
+}
+
 //detect the open wall firstone(0) or secondone(1)      8,9 - right  0,1 - left
 int openWall(){
   //move to the maze from barcode 
