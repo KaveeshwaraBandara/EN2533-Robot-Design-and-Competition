@@ -3,6 +3,7 @@
 #include <Adafruit_GFX.h>
 #include <Adafruit_SSD1306.h>`
 #include <Adafruit_VL53L0X.h>
+#include <Servo.h>
 
 
 //Tasks
@@ -177,6 +178,10 @@ int Tof2read;
 int Tof3read;
 int Tof4read;
 
+//servo
+Servo myservo1;  
+int pos = 100;
+
 // Interrupt Service Routine for Channel A
 void ISR_LEFT_A() {
     bool current_left_A = digitalRead(EN_LEFT_A_PIN);
@@ -304,6 +309,8 @@ pinMode(SHT_LOX1, OUTPUT);
   Serial.println(F("Starting..."));
   //setID();
 
+  myservo1.attach(6);  
+  myservo1.write(pos); 
   
   calibrate();
   position_left = 0;                       // Encoder position (counts)
@@ -2987,7 +2994,12 @@ void  moveBackAbove(){
 
 // grabbing the box
 void Grabbox(){
-
+  if (pos == 100){
+    for (pos = 100; pos >= 0; pos -= 1) { // Step down from 180 to 0 degrees
+    myservo1.write(pos);                 // Move the servo to the current position
+    delay(15);                          // Wait 15ms for the servo to reach the position
+  }
+  }
 }
 
 void Placerealbox(){
@@ -3046,6 +3058,13 @@ void movebackinverse(){
 
 void Dropbox(){
 //drop the box for place the box using servo
+    // Rotate servo from 0 to 0 degrees
+  if (pos == 0){
+    for (pos = 0; pos <= 100; pos += 1) { // Step down from 180 to 0 degrees
+    myservo1.write(pos);                 // Move the servo to the current position
+    delay(15);                          // Wait 15ms for the servo to reach the position
+  }
+  }
 }
 
 // int Tof1read(){     //this is for detect the gate  return value is distance
