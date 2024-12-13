@@ -1849,7 +1849,27 @@ int decimalValue = 0;
 void Turnright(){
   position_left = 0;
   position_right = 0;  
-  while (position_left < 325 || position_right < 15 ){
+  while(position_left < 110 || position_right < 110){
+    if (position_left < 110 && position_right < 110){
+      motor2run(lfSpeed);
+      motor1run(lfSpeed);
+    }
+    else if (position_left < 110 && position_right > 110){
+      motor1run(lfSpeed);
+      motor2run(0);      
+    }
+    else if (position_left > 110 && position_right < 110){
+      motor1run(0);
+      motor2run(lfSpeed);      
+    }
+    else{
+      motor2run(0);
+      motor1run(0);   
+    }
+  }
+  position_left = 0;
+  position_right = 0;  
+  while (position_left < 150 || position_right > -150 ){
     display.clearDisplay();
     display.setCursor(0, 10);
     display.println("pos_left =");
@@ -1857,17 +1877,17 @@ void Turnright(){
     display.println("pos_right =");
     display.println(position_right);
     display.display(); 
-    if (position_left < 325 && position_right < 15){
-      motor2run(lfSpeed);
+    if (position_left < 150 && position_right > -150){
       motor1run(lfSpeed);
+      motor2run(-lfSpeed);
     }
-    else if (position_left < 325 && position_right > 15){
+    else if (position_left < 150 && position_right < -150){
       motor1run(lfSpeed);
       motor2run(0);      
     }
-    else if (position_left > 325 && position_right < 15){
+    else if (position_left > 150 && position_right > -150){
       motor1run(0);
-      motor2run(lfSpeed);      
+      motor2run(-lfSpeed);      
     }
     else{
       motor2run(0);
@@ -1881,8 +1901,29 @@ void Turnright(){
 //turn left using encoders
 void Turnleft(){
   position_left = 0;
-  position_right = 0;  
-  while (position_left < 15 || position_right < 325 ){
+  position_right = 0; 
+  while(position_left < 110 || position_right < 110){
+    if (position_left < 110 && position_right < 110){
+      motor2run(lfSpeed);
+      motor1run(lfSpeed);
+    }
+    else if (position_left < 110 && position_right > 110){
+      motor1run(lfSpeed);
+      motor2run(0);      
+    }
+    else if (position_left > 110 && position_right < 110){
+      motor1run(0);
+      motor2run(lfSpeed);      
+    }
+    else{
+      motor2run(0);
+      motor1run(0);   
+    }
+  }
+  position_left = 0;
+  position_right = 0; 
+
+  while (position_left > -140 || position_right < 140 ){
     display.clearDisplay();
     display.setCursor(0, 10);
     display.println("pos_left =");
@@ -1890,16 +1931,16 @@ void Turnleft(){
     display.println("pos_right =");
     display.println(position_right);
     display.display(); 
-    if (position_left < 15 && position_right < 325){
+    if (position_left > -150 && position_right < 150){
+      motor1run(-lfSpeed);
       motor2run(lfSpeed);
-      motor1run(lfSpeed);
     }
-    else if (position_left > 15  && position_right < 325){
+    else if (position_left < -150   && position_right < 140){
       motor1run(0);
       motor2run(lfSpeed);      
     }
-    else if (position_left < 15 && position_right > 325){
-      motor1run(lfSpeed);
+    else if (position_left > -150 && position_right > 150){
+      motor1run(-lfSpeed);
       motor2run(0);      
     }
     else{
@@ -1909,6 +1950,9 @@ void Turnleft(){
   }
   motor2run(0);
   motor1run(0); 
+
+  position_left = 0;
+  position_right = 0; 
 }
 
 //identify junction left(1) or right(2) or straight(0)
