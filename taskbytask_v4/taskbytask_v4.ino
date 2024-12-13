@@ -51,7 +51,8 @@ int minValues[10], maxValues[10], threshold[10], sensorValue[10], sensorArray[10
 #define S1 4
 #define S2 5
 #define S3 6
-#define sensorOut 2
+#define OUT 2
+// #define VCC_color 7
 
 int redMin = 17; // Red minimum value
 int redMax = 145; // Red maximum value
@@ -216,9 +217,10 @@ void setup() {
   pinMode(S1, OUTPUT);
   pinMode(S2, OUTPUT);
   pinMode(S3, OUTPUT);
+  // pinMode(VCC_color, OUTPUT);
   
   // Set Sensor output as input
-  pinMode(sensorOut, INPUT);
+ pinMode(OUT, INPUT);
   
   // Set Frequency scaling to 20%
   digitalWrite(S0,HIGH);
@@ -412,7 +414,7 @@ void task1() {
 void task2() {
   int colr;
   int wall = openWall();                            //first wall = 0 second wall = 1
-  vBoxPosition = 2;
+  vBoxPosition = 4;
   wall = 1;
   if(vBoxPosition == 0){                        //8,9 - right 0,1- left
     uTurn();
@@ -436,7 +438,6 @@ void task2() {
     if(wall == 0){
       inversejump();
       moveBack();
-      inversejump();
       moveForVB0();      
     
     // while(true){
@@ -582,6 +583,7 @@ void task2() {
 
       inversejump();
       moveBackAbove();
+      inversejump();
 
       Turnleft();
       avoidjunc();
@@ -688,12 +690,16 @@ void task2() {
       inversejump();
       moveBackAbove();
 
+      motor2run(0);
+      motor1run(0);
+
       delay(500);
       placeBox();
       delay(500);
 
       inversejump();
       moveBackAbove();
+      inversejump();
 
       Turnleft();
       avoidjunc();
@@ -905,6 +911,10 @@ void task2() {
       moveBackAbove();
       inversejump();
       moveBackAbove();
+      inversejump();
+
+      motor2run(0);
+      motor1run(0);
       
       delay(500);
       placeBox();
@@ -912,6 +922,7 @@ void task2() {
 
       inversejump();
       moveBackAbove();
+      inversejump();
 
       Turnleft();
       avoidjunc();
@@ -1002,6 +1013,7 @@ void task2() {
 
       inversejump();
       moveBackColour();
+      inversejump();
 
       delay(500);
       placeBox();
@@ -1071,6 +1083,10 @@ void task2() {
       moveBackAbove();
       inversejump();
       moveBackAbove();
+      inversejump();
+
+      motor2run(0);
+      motor1run(0);
 
       delay(500);
       placeBox();
@@ -1078,6 +1094,7 @@ void task2() {
 
       inversejump();
       moveBackAbove();
+      inversejump();
 
       Turnleft();
       avoidjunc();
@@ -1188,6 +1205,9 @@ void task2() {
       delay(500);
       inversejump();
       moveBackAbove();
+
+      motor2run(0);
+      motor1run(0);
       
       delay(500);
       placeBox();
@@ -2131,8 +2151,8 @@ void synchronizeMotorSpeeds(int forward) {
 
         // PID calculation
         float error = abs(position_right) - abs(position_left);
-        integral += error * deltaTime / 1000.0;
-        float derivative = (error - prevError) / (deltaTime / 1000.0);
+        integral += error * 100 / 1000.0;
+        float derivative = (error - prevError) / (100 / 1000.0);
         prevError = error;
 
         prev_position_left = position_left;
@@ -2321,7 +2341,7 @@ void Turnright(){
     display.display(); 
     if (position_left < 150 && position_right > -150){
       motor1run(lfSpeed);
-      motor2run(-lfSpeed);
+      motor2run(-(lfSpeed+10));
     }
     else if (position_left < 150 && position_right < -150){
       motor1run(lfSpeed);
@@ -2329,7 +2349,7 @@ void Turnright(){
     }
     else if (position_left > 150 && position_right > -150){
       motor1run(0);
-      motor2run(-lfSpeed);      
+      motor2run(-(lfSpeed+10));      
     }
     else{
       motor2run(0);
@@ -2374,7 +2394,7 @@ void Turnleft(){
     display.println(position_right);
     display.display(); 
     if (position_left > -150 && position_right < 150){
-      motor1run(-lfSpeed);
+      motor1run(-(lfSpeed+10));
       motor2run(lfSpeed);
     }
     else if (position_left < -150   && position_right < 140){
@@ -2382,7 +2402,7 @@ void Turnleft(){
       motor2run(lfSpeed);      
     }
     else if (position_left > -150 && position_right > 150){
-      motor1run(-lfSpeed);
+      motor1run(-(lfSpeed+10));
       motor2run(0);      
     }
     else{
@@ -2684,7 +2704,7 @@ void uTurn(){
   position_right = 0;  
   while (position_left > -325 || position_right < 325 ){ 
     if (position_left > -325 && position_right < 325){
-      motor1run(-lfSpeed);
+      motor1run(-(lfSpeed+10));
       motor2run(lfSpeed);
     }
     else if (position_left < -325  && position_right < 325){
@@ -2692,7 +2712,7 @@ void uTurn(){
       motor2run(lfSpeed);      
     }
     else if (position_left > -325 && position_right > 325){
-      motor1run(-lfSpeed);
+      motor1run(-(lfSpeed+10));
       motor2run(0);      
     }
     else{
@@ -2753,24 +2773,49 @@ void moveBack(){
 
 //detect blue(1) or red(2) otherwise return 0 
 int detectcolour(){
-  // Read Red value
-  redPW = getRedPW();
-  redValue = map(redPW, redMin,redMax,255,0);
+//   digitalWrite(S0, HIGH);
+//   digitalWrite(S1, HIGH);
+//   digitalWrite(VCC_color, HIGH);
 
-  // Read Blue value
-  bluePW = getBluePW();
-  blueValue = map(bluePW, blueMin,blueMax,255,0);
+//   // Read Red frequency
+//   digitalWrite(S2, LOW);
+//   digitalWrite(S3, LOW);
+//  int  redFrequency = pulseIn(OUT, LOW);
+// //  Serial.print("redFrequency :");
+// //  Serial.print(redFrequency);
+// //  Serial.print("  ");
 
-  if(1){          //find the range of blue and red values for colour sensor for red and blue seperately and usethem for if condition
-    return 1;
-  }
-  else if(1){
-    return 2;
-  }
-  else if(1){
-    return 0;
-  }
+//   // Read Blue frequency
+//   digitalWrite(S2, LOW);
+//   digitalWrite(S3, HIGH);
+//   int blueFrequency = pulseIn(OUT, LOW);
+// //  Serial.print("blueFrequency :");
+// //  Serial.println(blueFrequency);
+
+//   // Determine the color
+//   if (redFrequency < 20 && blueFrequency < 20) {
+//     return 0; // White
+//   } else if (blueFrequency < redFrequency && blueFrequency < 40) {
+//     digitalWrite(S0, LOW);
+//     digitalWrite(S1, LOW);
+//     digitalWrite(S0, LOW);
+//     digitalWrite(S1, LOW);
+//     digitalWrite(VCC_color, LOW);
+//     return 1; // Blue
+//   } else if(blueFrequency > redFrequency && redFrequency < 40){
+//     digitalWrite(S0, LOW);
+//     digitalWrite(S1, LOW);
+//     digitalWrite(S0, LOW);
+//     digitalWrite(S1, LOW);
+//     digitalWrite(VCC_color, LOW);
+//     return 2; // Red
+//   }
+//   else if (redFrequency > 40 && blueFrequency > 40){
+//     return 0; // Black
+// }
 }
+
+
 
 //move back with colour detection(we need to move back until colour sensor detect red or blue)
 void moveBackColour(){
@@ -2887,23 +2932,7 @@ void Dropbox(){
 
 // }
 
-// Function to read Red Pulse Widths
-int getRedPW() {
-  digitalWrite(S2,LOW);
-  digitalWrite(S3,LOW);
-  int PW;
-  PW = pulseIn(sensorOut, LOW);
-  return PW;
-}
 
-// Function to read blue Pulse Widths
-int getBluePW() {
-  digitalWrite(S2,LOW);
-  digitalWrite(S3,HIGH);
-  int PW;
-  PW = pulseIn(sensorOut, LOW);
-  return PW;
-}
 
 //detect gate closed or open (open retuns false.. close returns true)
 bool gateDetected(){
@@ -2935,6 +2964,8 @@ void moveForVB0(){
     delay(500);
     placeBox();
     delay(500);
+
+    inversejump();
 
     while(true){
       synchronizeMotorSpeeds(0);
