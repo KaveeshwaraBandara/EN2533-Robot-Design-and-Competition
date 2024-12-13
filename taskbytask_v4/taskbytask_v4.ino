@@ -1969,10 +1969,35 @@ int Junction(){
   }
 }
 
+//avoid junction errors
 void avoidjunc(){
   while(position_left < 110 && position_right < 110){
     readline();
     linefollow();
+  }
+}
+
+//move little bit away from junction
+void jump(){
+  position_left = 0;
+  position_right = 0; 
+  while(position_left < 110 || position_right < 110){
+    if (position_left < 110 && position_right < 110){
+      motor2run(lfSpeed);
+      motor1run(lfSpeed);
+    }
+    else if (position_left < 110 && position_right > 110){
+      motor1run(lfSpeed);
+      motor2run(0);      
+    }
+    else if (position_left > 110 && position_right < 110){
+      motor1run(0);
+      motor2run(lfSpeed);      
+    }
+    else{
+      motor2run(0);
+      motor1run(0);   
+    }
   }
 }
 
