@@ -45,8 +45,8 @@ unsigned int numSensors = 10;      // Enter number of sensors as 5 or 7
 int P, D, I, previousError, PIDvalue;
 double error = 0.00;
 int lsp, rsp;
-int lfSpeed = 80;
-int currentSpeed = 80;
+int lfSpeed = 65;
+int currentSpeed = 65;
 int sensorWeight[10] = {5, 4, 2, 1, 0, 0, -1, -2, -4, -5};
 int activeSensors;
 float Kp = 15;
@@ -59,12 +59,16 @@ int onLine = 1;
 int minValues[10], maxValues[10], threshold[10], sensorValue[10], sensorArray[10];
 
 // Define color sensor pins
-#define S0 3
-#define S1 4
-#define S2 5
-#define S3 6
-#define OUT 2
-#define VCC_color 52
+#define S0 23
+#define S1 24
+#define S2 44
+#define S3 50
+#define OUT 42
+#define VCC_color 48
+#define colorLEDred 34
+#define colorLEDredNeg 35
+#define colorLEDblue 32
+#define colorLEDblueNeg 33
 
 int redMin = 17; // Red minimum value
 int redMax = 145; // Red maximum value
@@ -257,6 +261,10 @@ void setup() {
   pinMode(S2, OUTPUT);
   pinMode(S3, OUTPUT);
   pinMode(VCC_color, OUTPUT);
+  pinMode(colorLEDred, OUTPUT);
+  pinMode(colorLEDredNeg, OUTPUT);
+    pinMode(colorLEDblue, OUTPUT);
+  pinMode(colorLEDblueNeg, OUTPUT);
   
   // Set Sensor output as input
  pinMode(OUT, INPUT);
@@ -457,7 +465,7 @@ void task1() {
 void task2() {
   int colr;
   int wall = openWall();                            //first wall = 0 second wall = 1
-  wall = 1;
+  //wall = 1;
   if(vBoxPosition == 0){                        //8,9 - right 0,1- left
     uTurn();
     avoidjunc();
@@ -1316,7 +1324,10 @@ void task2() {
   if(placed){
     motor2run(0);
     motor1run(0);
-    uTurn();
+    if(vBoxPosition!=0){
+      uTurn();
+    }
+    
     currentState = STATE_TASK3;
   }  
 }
@@ -2851,9 +2862,9 @@ int detectWall(){
   
     
   if (distance <= 15){
-  	return 1;
+  	return 0;
   } else {
-    return 0;
+    return 1;
   }
 }
 
@@ -2864,7 +2875,7 @@ void moveBack(){
   //   synchronizeMotorSpeeds(0);
   // }while(sensorArray[0] == 1 && sensorArray[1] == 1||sensorArray[8] == 1 && sensorArray[9] == 1);
   int initialPWM = basePWM;
-  basePWM = 100;
+  basePWM = 85;
   while(true){
     readLine();
     synchronizeMotorSpeeds(0);
@@ -2888,36 +2899,41 @@ int detectcolour(){
   digitalWrite(S2, LOW);
   digitalWrite(S3, LOW);
  int  redFrequency = pulseIn(OUT, LOW);
-//  Serial.print("redFrequency :");
-//  Serial.print(redFrequency);
-//  Serial.print("  ");
+
 
   // Read Blue frequency
   digitalWrite(S2, LOW);
   digitalWrite(S3, HIGH);
   int blueFrequency = pulseIn(OUT, LOW);
-//  Serial.print("blueFrequency :");
-//  Serial.println(blueFrequency);
+
 
   // Determine the color
-  if (redFrequency < 20 && blueFrequency < 20) {
+  if (redFrequency < 10 && blueFrequency < 10) {
     return 0; // White
-  } else if (blueFrequency < redFrequency && blueFrequency < 40) {
+  } else if (blueFrequency < redFrequency && blueFrequency < 25) {
     digitalWrite(S0, LOW);
     digitalWrite(S1, LOW);
     digitalWrite(S0, LOW);
     digitalWrite(S1, LOW);
     digitalWrite(VCC_color, LOW);
+    digitalWrite(colorLEDblue, HIGH);
+    digitalWrite(colorLEDblueNeg, LOW);
+    delay(500);
+    digitalWrite(colorLEDblue, LOW);
     return 1; // Blue
-  } else if(blueFrequency > redFrequency && redFrequency < 40){
+  } else if(blueFrequency > redFrequency && redFrequency < 25){
     digitalWrite(S0, LOW);
     digitalWrite(S1, LOW);
     digitalWrite(S0, LOW);
     digitalWrite(S1, LOW);
     digitalWrite(VCC_color, LOW);
+    digitalWrite(colorLEDred, HIGH);
+    digitalWrite(colorLEDredNeg, LOW);
+    delay(500);
+    digitalWrite(colorLEDred, LOW);
     return 2; // Red
   }
-  else if (redFrequency > 40 && blueFrequency > 40){
+  else if (redFrequency > 30 && blueFrequency > 30){
     return 0;// Black
 }
 }
@@ -2936,12 +2952,17 @@ void moveBackColour(){
     synchronizeMotorSpeeds(0);
     detected = detectcolour();
 
-    if(detected == 1|| detected == 2){
+    if(sensorArray[0] == 1 && sensorArray[1] == 1||sensorArray[8] == 1 && sensorArray[9] == 1){
       break;
     }
   }
   motor2run(0);
   motor1run(0); 
+  inversejump();
+  inversejump();
+  motor2run(0);
+  motor1run(0); 
+  
 }
 
 //this is for move back in maze above line(move back until met a junction)
@@ -3137,13 +3158,16 @@ void moveForVB0(){
       delay(500);
     
     while(true){
-      colr = detectcolour();
+      //colr = detectcolour();
       readLine();
       linefollow();
-      if(colr == 1 || colr == 2){
+      if(sensorArray[0]==1 && sensorArray[1]==1 && sensorArray[8]==1 && sensorArray[9]==1){
         break;
       }
     }
+
+    jump();
+    jump();
 
     motor2run(0);
     motor1run(0);
