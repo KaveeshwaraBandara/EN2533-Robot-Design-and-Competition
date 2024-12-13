@@ -2,6 +2,7 @@
 #include <Wire.h>
 #include <Adafruit_GFX.h>
 #include <Adafruit_SSD1306.h>`
+#include <Adafruit_VL53L0X.h>
 
 
 //Tasks
@@ -128,6 +129,37 @@ const int echo_pin = 5;
 float timing = 0.0;
 float distance = 0.0;
 
+//define of tof
+// address we will assign if dual sensor is present
+#define LOX1_ADDRESS 0x30
+#define LOX2_ADDRESS 0x31
+#define LOX3_ADDRESS 0x32
+#define LOX4_ADDRESS 0x33
+
+// set the pins to shutdown
+#define SHT_LOX1 25
+#define SHT_LOX2 26
+#define SHT_LOX3 27
+#define SHT_LOX4 28
+
+// objects for the vl53l0x
+Adafruit_VL53L0X lox1 = Adafruit_VL53L0X();
+Adafruit_VL53L0X lox2 = Adafruit_VL53L0X();
+Adafruit_VL53L0X lox3 = Adafruit_VL53L0X();
+Adafruit_VL53L0X lox4 = Adafruit_VL53L0X();
+
+// this holds the measurement
+VL53L0X_RangingMeasurementData_t measure1;
+VL53L0X_RangingMeasurementData_t measure2;
+VL53L0X_RangingMeasurementData_t measure3;
+VL53L0X_RangingMeasurementData_t measure4;
+
+//varibales for hold tof values
+int Tof1read;
+int Tof2read;
+int Tof3read;
+int Tof4read;
+
 // Interrupt Service Routine for Channel A
 void ISR_LEFT_A() {
     bool current_left_A = digitalRead(EN_LEFT_A_PIN);
@@ -203,6 +235,25 @@ void setup() {
   }
   display.setTextSize(1);
   display.setTextColor(WHITE);
+
+  //Setup for tof
+pinMode(SHT_LOX1, OUTPUT);
+  pinMode(SHT_LOX2, OUTPUT);
+  pinMode(SHT_LOX3, OUTPUT);
+  pinMode(SHT_LOX4, OUTPUT);
+
+  Serial.println(F("Shutdown pins inited..."));
+
+  digitalWrite(SHT_LOX1, LOW);
+  digitalWrite(SHT_LOX2, LOW);
+  digitalWrite(SHT_LOX3, LOW);
+  digitalWrite(SHT_LOX4, LOW);
+
+  Serial.println(F("All in reset mode...(pins are low)"));
+  
+  
+  Serial.println(F("Starting..."));
+  setID();
 
   
   calibrate();
@@ -352,6 +403,7 @@ void task2() {
   int wall = openWall();                            //first wall = 0 second wall = 1
   if(vBoxPosition == 0){                        //8,9 - right 0,1- left
     uTurn();
+    avoidjunc();
 
     while(true){
       readLine();
@@ -364,7 +416,9 @@ void task2() {
     motor2run(0);
     motor1run(0);
 
+    delay(500);
     pickBox();
+    delay(500);
 
     if(wall == 0){
       moveBack();
@@ -1153,410 +1207,593 @@ void task5(){
 }
 
 void task6() {
-  
-  if (linecolor == 1){ //1 is blue
-    do{
+   if (linecolor == 1){ //1 is blue
+    while(true){
       inversereadline();
       linefollow();
-    }while(sensorArray[0] == 0 && sensorArray[9] == 0); //zero is black
+      if (sensorArray[8] == 1 && sensorArray[9] == 1){//zero is black
+          break;
+      }
+    }
     Turnleft();
+    inverseavoidjunc();
 
 // 1st box
-
-    do{
+    while(true){
       inversereadline();
       linefollow();
-      distance1 = Tof1read(); //define
-    }while(distance1 <= 5);
+      if (Tof1read <= 50 ){//zero is black
+          break;
+      }
+    }
     Grabbox();
-    distance2 = Tof2read();
-    distance3 = Tof3read();
+    distance2 = Tof2read;
+    distance3 = Tof3read;
     uTurn();
-    do{
+    inverseavoidjunc();
+    while(true){
       inversereadline();
       linefollow();
-    }while(sensorArray[0] == 0 && sensorArray[9] == 0); //zero is black
+      if (sensorArray[0] == 1 && sensorArray[9] == 1){//zero is black
+          break;
+      }
+    }
     //largest box
-    if(distance2 <= 10 && distance3 <= 10){
+    if(distance2 <= 100 && distance3 <= 100){
       Turnleft();
-      distance_left = 0;
-      distance_right = 0;
-      do{
-        inversereadline();
-        linefollow();
-        float distance_left = (position_left / CPR) * CIRCUMFERENCE; // Distance in meters
-        float distance_right = (position_right / CPR) * CIRCUMFERENCE; // Distance in meters
-        float length = (distance_left + distance_right)/2;  //average value
-      }while(sensorArray[0] == 0 && sensorArray[9] == 0 && length > 35); //zero is black
+      inverseavoidjunc();
+      while(true){
+      inversereadline();
+      linefollow();
+      if (sensorArray[0] == 1 && sensorArray[9] == 1){//zero is black
+          break;
+      }
+      }
+      jump();
+      while(true){
+      inversereadline();
+      linefollow();
+      if (sensorArray[0] == 1 && sensorArray[9] == 1){//zero is black
+          break;
+      }
+      }
       Turnright();
       Placerealbox();
       Turnright();
-      do{
+      inverseavoidjunc();
+      while(true){
       inversereadline();
       linefollow();
-      }while(sensorArray[0] == 0 && sensorArray[9] == 0); //zero is black
+      if (sensorArray[0] == 1 && sensorArray[9] == 1){//zero is black
+          break;
+      }
+      }
       Turnright();
     }
     //medium box
-    if(distance2 <= 10 && distance3 > 10){
+    if(distance2 <= 100 && distance3 > 100){
       Turnleft();
-      do{
+      inverseavoidjunc();
+      while(true){
       inversereadline();
       linefollow();
-      }while(sensorArray[0] == 0 && sensorArray[9] == 0); //zero is black
+      if (sensorArray[0] == 1 && sensorArray[9] == 1){//zero is black
+          break;
+      }
+      }
       Turnright();
+      inverseavoidjunc();
       Placerealbox();
+      inversejump();
       uTurn();
     }
 
     //small box
-    if(distance2 > 10 && distance3 > 10){
+    if(distance2 > 100 && distance3 > 100){
       Placerealbox();
       Turnleft();
-      do{
-        inversereadline();
-        linefollow();
-      }while(sensorArray[0] == 0 && sensorArray[9] == 0); //zero is black
+      while(true){
+      inversereadline();
+      linefollow();
+      if (sensorArray[0] == 1 && sensorArray[9] == 1){//zero is black
+          break;
+      }
+      }
       Turnleft();
     }
 
 //2nd box
-
-    do{
+    while(true){
       inversereadline();
       linefollow();
-      distance1 = Tof1read(); //define
-    }while(distance1 <= 5);
+      if (Tof1read <= 50 ){//zero is black
+          break;
+      }
+    }
     Grabbox();
-    distance2 = Tof2read();
-    distance3 = Tof3read();
+    distance2 = Tof2read;
+    distance3 = Tof3read;
     uTurn();
-    do{
+    inverseavoidjunc();
+    while(true){
       inversereadline();
       linefollow();
-    }while(sensorArray[0] == 0 && sensorArray[9] == 0); //zero is black
-
+      if (sensorArray[0] == 1 && sensorArray[9] == 1){//zero is black
+          break;
+      }
+    }
     //large box
-    if(distance2 <= 10 && distance3 <= 10){
+    if(distance2 <= 100 && distance3 <= 100){
       Turnleft();
-      do{
+      inverseavoidjunc();
+      while(true){
       inversereadline();
       linefollow();
-      }while(sensorArray[0] == 0 && sensorArray[9] == 0); //zero is black
+      if (sensorArray[0] == 1 && sensorArray[9] == 1){//zero is black
+          break;
+      }
+      }
       Turnright();
+      inverseavoidjunc();
       Placerealbox();
+      inversejump();
       uTurn();
     }
 
     //medium box
-    if(distance2 > 10 && distance3 > 10){
+    if(distance2 <= 100 && distance3 > 100){
+        jump();
         Placerealbox();
         Turnleft();
-        do{
-          inversereadline();
-          linefollow();
-        }while(sensorArray[0] == 0 && sensorArray[9] == 0); //zero is black
-        Turnleft();
+        inverseavoidjunc();
+      while(true){
+      inversereadline();
+      linefollow();
+      if (sensorArray[0] == 1 && sensorArray[9] == 1){//zero is black
+          break;
+      }
+      }
+      Turnleft();
       }
     //small box
-    if(distance2 > 10 && distance3 > 10){
+    if(distance2 > 100 && distance3 > 100){
         Turnright();
-        do{
-          inversereadline();
-          linefollow();
-          }while(sensorArray[0] == 0 && sensorArray[9] == 0); //zero is black
+        inverseavoidjunc();
+        while(true){
+        inversereadline();
+        linefollow();
+        if (sensorArray[0] == 1 && sensorArray[9] == 1){//zero is black
+          break;
+        }
+        }
         Turnleft();
+        inverseavoidjunc();
         Placerealbox();
         Turnleft();
-        distance_left = 0;
-        distance_right = 0;
-        do{
-          inversereadline();
-          linefollow();
-          float distance_left = (position_left / CPR) * CIRCUMFERENCE; // Distance in meters
-          float distance_right = (position_right / CPR) * CIRCUMFERENCE; // Distance in meters
-          float length = (distance_left + distance_right)/2;  //average value
-        }while(sensorArray[0] == 0 && sensorArray[9] == 0 && length > 35); //zero is black
+        inverseavoidjunc();
+        while(true){
+        inversereadline();
+        linefollow();
+        if (sensorArray[0] == 1 && sensorArray[9] == 1){//zero is black
+          break;
+        }
+        }
+        jump();
+        while(true){
+        inversereadline();
+        linefollow();
+        if (sensorArray[0] == 1 && sensorArray[9] == 1){//zero is black
+          break;
+        }
+        }
         Turnleft();
     }
 
 // 3rd box
 
-    do{
+    while(true){
       inversereadline();
       linefollow();
-      distance1 = Tof1read(); //define
-    }while(distance1 <= 5);
+      if (Tof1read <= 50 ){//zero is black
+          break;
+      }
+    }
     Grabbox();
-    distance2 = Tof2read();
-    distance3 = Tof3read();
+    distance2 = Tof2read;
+    distance3 = Tof3read;
     uTurn();
-    do{
+    inverseavoidjunc();
+    while(true){
       inversereadline();
       linefollow();
-    }while(sensorArray[0] == 0 && sensorArray[9] == 0); //zero is black
-
+      if (sensorArray[0] == 1 && sensorArray[9] == 1){//zero is black
+          break;
+      }
+    }
     //large box
-    if(distance2 <= 10 && distance3 <= 10){
+    if(distance2 <= 100 && distance3 <= 100){
         Placerealbox();
         Turnleft();
-        distance_left = 0;
-        distance_right = 0;
-      do{
-        inversereadline();
+        while(true){
+          inversereadline();
         linefollow();
-        float distance_left = (position_left / CPR) * CIRCUMFERENCE; // Distance in meters
-        float distance_right = (position_right / CPR) * CIRCUMFERENCE; // Distance in meters
-        float length = (distance_left + distance_right)/2;  //average value
-      }while(sensorArray[0] == 0 && sensorArray[9] == 0 && length > 15);
+        if (sensorArray[0] == 1 && sensorArray[9] == 1 && sensorArray[5] == 1){//zero is black
+            break;
+        }
+        }
+      
     }
     //medium box
-    if(distance2 > 10 && distance3 > 10){
+    if(distance2 < 100 && distance3 > 100){
         Turnright();
-        do{
-          inversereadline();
-          linefollow();
-          }while(sensorArray[0] == 0 && sensorArray[9] == 0); //zero is black
+        inverseavoidjunc();
+        while(true){
+        inversereadline();
+        linefollow();
+        if (sensorArray[0] == 1 && sensorArray[9] == 1){//zero is black
+            break;
+        }
+        }
         Turnleft();
         Placerealbox();
         Turnleft();
-        distance_left = 0;
-        distance_right = 0;
-        do{
-          inversereadline();
-          linefollow();
-          float distance_left = (position_left / CPR) * CIRCUMFERENCE; // Distance in meters
-          float distance_right = (position_right / CPR) * CIRCUMFERENCE; // Distance in meters
-          float length = (distance_left + distance_right)/2;  //average value
-        }while(sensorArray[0] == 0 && sensorArray[9] == 0 && length > 35); //zero is black
-    }
-    //small box
-    if(distance2 > 10 && distance3 > 10){
-      Turnright();
-      distance_left = 0;
-      distance_right = 0;
-      do{
+        inverseavoidjunc();
+        while(true){
         inversereadline();
         linefollow();
-        float distance_left = (position_left / CPR) * CIRCUMFERENCE; // Distance in meters
-        float distance_right = (position_right / CPR) * CIRCUMFERENCE; // Distance in meters
-        float length = (distance_left + distance_right)/2;  //average value
-      }while(sensorArray[0] == 0 && sensorArray[9] == 0 && length > 35); //zero is black
+        if (sensorArray[0] == 1 && sensorArray[9] == 1){//zero is black
+            break;
+        }
+        }
+        jump();
+        while(true){
+        inversereadline();
+        linefollow();
+        if (sensorArray[0] == 1 && sensorArray[9] == 1){//zero is black
+            break;
+        }
+        }
+    }
+    //small box
+    if(distance2 > 100 && distance3 > 100){
+      Turnright();
+      inverseavoidjunc();
+      while(true){
+        inversereadline();
+        linefollow();
+        if (sensorArray[0] == 1 && sensorArray[9] == 1){//zero is black
+            break;
+        }
+        }
+        jump();
+        while(true){
+        inversereadline();
+        linefollow();
+        if (sensorArray[0] == 1 && sensorArray[9] == 1){//zero is black
+            break;
+        }
+        }
       Turnleft();
       Placerealbox();
       Turnleft();
-      distance_left = 0;
-      distance_right = 0;
-      do{
+      while(true){
         inversereadline();
         linefollow();
-        float distance_left = (position_left / CPR) * CIRCUMFERENCE; // Distance in meters
-        float distance_right = (position_right / CPR) * CIRCUMFERENCE; // Distance in meters
-        float length = (distance_left + distance_right)/2;  //average value
-      }while(sensorArray[0] == 0 && sensorArray[9] == 0 && length > 65);
-    }
-  }
-  if (linecolor == 2){ //2 is red
-    do{
+        if (sensorArray[0] == 1 && sensorArray[9] == 1){//zero is black
+            break;
+        }
+        }
+        jump();
+        while(true){
+        inversereadline();
+        linefollow();
+        if (sensorArray[0] == 1 && sensorArray[9] == 1){//zero is black
+            break;
+        }
+        }
+        while(true){
+        inversereadline();
+        linefollow();
+        if (sensorArray[0] == 1 && sensorArray[9] == 1 && sensorArray[5] == 1){//zero is black
+            break;
+        }
+        }
+   }
+   }
+  
+  if (linecolor == 2){ //1 is blue
+    while(true){
       inversereadline();
       linefollow();
-    }while(sensorArray[0] == 0 && sensorArray[9] == 0); //zero is black
+      if (sensorArray[8] == 1 && sensorArray[9] == 1){//zero is black
+          break;
+      }
+    }
     Turnleft();
+    inverseavoidjunc();
 
 // 1st box
-
-    do{
+    while(true){
       inversereadline();
       linefollow();
-      distance1 = Tof1read(); //define
-    }while(distance1 <= 5);
+      if (Tof1read <= 50 ){//zero is black
+          break;
+      }
+    }
     Grabbox();
-    distance2 = Tof2read();
-    distance3 = Tof3read();
+    distance2 = Tof2read;
+    distance3 = Tof3read;
     uTurn();
-    do{
+    inverseavoidjunc();
+    while(true){
       inversereadline();
       linefollow();
-    }while(sensorArray[0] == 0 && sensorArray[9] == 0); //zero is black
+      if (sensorArray[0] == 1 && sensorArray[9] == 1){//zero is black
+          break;
+      }
+    }
     //small box
-    if(distance2 > 10 && distance3 > 10){
+    if(distance2 > 100 && distance3 > 100){
       Turnleft();
-      distance_left = 0;
-      distance_right = 0;
-      do{
-        inversereadline();
-        linefollow();
-        float distance_left = (position_left / CPR) * CIRCUMFERENCE; // Distance in meters
-        float distance_right = (position_right / CPR) * CIRCUMFERENCE; // Distance in meters
-        float length = (distance_left + distance_right)/2;  //average value
-      }while(sensorArray[0] == 0 && sensorArray[9] == 0 && length > 35); //zero is black
+      inverseavoidjunc();
+      while(true){
+      inversereadline();
+      linefollow();
+      if (sensorArray[0] == 1 && sensorArray[9] == 1){//zero is black
+          break;
+      }
+      }
+      jump();
+      while(true){
+      inversereadline();
+      linefollow();
+      if (sensorArray[0] == 1 && sensorArray[9] == 1){//zero is black
+          break;
+      }
+      }
       Turnright();
       Placerealbox();
       Turnright();
-      do{
+      inverseavoidjunc();
+      while(true){
       inversereadline();
       linefollow();
-      }while(sensorArray[0] == 0 && sensorArray[9] == 0); //zero is black
+      if (sensorArray[0] == 1 && sensorArray[9] == 1){//zero is black
+          break;
+      }
+      }
       Turnright();
     }
     //medium box
-    if(distance2 <= 10 && distance3 > 10){
+    if(distance2 <= 100 && distance3 > 100){
       Turnleft();
-      do{
+      inverseavoidjunc();
+      while(true){
       inversereadline();
       linefollow();
-      }while(sensorArray[0] == 0 && sensorArray[9] == 0); //zero is black
+      if (sensorArray[0] == 1 && sensorArray[9] == 1){//zero is black
+          break;
+      }
+      }
       Turnright();
+      inverseavoidjunc();
       Placerealbox();
+      inversejump();
       uTurn();
     }
 
     //large box
-    if(distance2 <= 10 && distance3 <= 10){
+    if(distance2 <= 100 && distance3 <= 100){
       Placerealbox();
       Turnleft();
-      do{
-        inversereadline();
-        linefollow();
-      }while(sensorArray[0] == 0 && sensorArray[9] == 0); //zero is black
+      while(true){
+      inversereadline();
+      linefollow();
+      if (sensorArray[0] == 1 && sensorArray[9] == 1){//zero is black
+          break;
+      }
+      }
       Turnleft();
     }
 
 //2nd box
-
-    do{
+    while(true){
       inversereadline();
       linefollow();
-      distance1 = Tof1read(); //define
-    }while(distance1 <= 5);
+      if (Tof1read <= 50 ){//zero is black
+          break;
+      }
+    }
     Grabbox();
-    distance2 = Tof2read();
-    distance3 = Tof3read();
+    distance2 = Tof2read;
+    distance3 = Tof3read;
     uTurn();
-    do{
+    inverseavoidjunc();
+    while(true){
       inversereadline();
       linefollow();
-    }while(sensorArray[0] == 0 && sensorArray[9] == 0); //zero is black
-
+      if (sensorArray[0] == 1 && sensorArray[9] == 1){//zero is black
+          break;
+      }
+    }
     //small box
-    if(distance2 > 10 && distance3 > 10){
+    if(distance2 > 100 && distance3 > 100){
       Turnleft();
-      do{
+      inverseavoidjunc();
+      while(true){
       inversereadline();
       linefollow();
-      }while(sensorArray[0] == 0 && sensorArray[9] == 0); //zero is black
+      if (sensorArray[0] == 1 && sensorArray[9] == 1){//zero is black
+          break;
+      }
+      }
       Turnright();
+      inverseavoidjunc();
       Placerealbox();
+      inversejump();
       uTurn();
     }
 
     //medium box
-    if(distance2 > 10 && distance3 > 10){
+    if(distance2 <= 100 && distance3 > 100){
+        jump();
         Placerealbox();
         Turnleft();
-        do{
-          inversereadline();
-          linefollow();
-        }while(sensorArray[0] == 0 && sensorArray[9] == 0); //zero is black
-        Turnleft();
+        inverseavoidjunc();
+      while(true){
+      inversereadline();
+      linefollow();
+      if (sensorArray[0] == 1 && sensorArray[9] == 1){//zero is black
+          break;
+      }
+      }
+      Turnleft();
       }
     //large box
-    if(distance2 <= 10 && distance3 <= 10){
+    if(distance2 <= 100 && distance3 <= 100){
         Turnright();
-        do{
-          inversereadline();
-          linefollow();
-          }while(sensorArray[0] == 0 && sensorArray[9] == 0); //zero is black
-        }Turnleft();
+        inverseavoidjunc();
+        while(true){
+        inversereadline();
+        linefollow();
+        if (sensorArray[0] == 1 && sensorArray[9] == 1){//zero is black
+          break;
+        }
+        }
+        Turnleft();
+        inverseavoidjunc();
         Placerealbox();
         Turnleft();
-        distance_left = 0;
-        distance_right = 0;
-        do{
-          inversereadline();
-          linefollow();
-          float distance_left = (position_left / CPR) * CIRCUMFERENCE; // Distance in meters
-          float distance_right = (position_right / CPR) * CIRCUMFERENCE; // Distance in meters
-          float length = (distance_left + distance_right)/2;  //average value
-        }while(sensorArray[0] == 0 && sensorArray[9] == 0 && length > 35); //zero is black
+        inverseavoidjunc();
+        while(true){
+        inversereadline();
+        linefollow();
+        if (sensorArray[0] == 1 && sensorArray[9] == 1){//zero is black
+          break;
+        }
+        }
+        jump();
+        while(true){
+        inversereadline();
+        linefollow();
+        if (sensorArray[0] == 1 && sensorArray[9] == 1){//zero is black
+          break;
+        }
+        }
         Turnleft();
     }
 
 // 3rd box
 
-    do{
+    while(true){
       inversereadline();
       linefollow();
-      distance1 = Tof1read(); //define
-    }while(distance1 <= 5);
+      if (Tof1read <= 50 ){//zero is black
+          break;
+      }
+    }
     Grabbox();
-    distance2 = Tof2read();
-    distance3 = Tof3read();
+    distance2 = Tof2read;
+    distance3 = Tof3read;
     uTurn();
-    do{
+    inverseavoidjunc();
+    while(true){
       inversereadline();
       linefollow();
-    }while(sensorArray[0] == 0 && sensorArray[9] == 0); //zero is black
-
+      if (sensorArray[0] == 1 && sensorArray[9] == 1){//zero is black
+          break;
+      }
+    }
     //small box
-    if(distance2 > 10 && distance3 > 10){
+    if(distance2 > 100 && distance3 > 100){
         Placerealbox();
         Turnleft();
-        distance_left = 0;
-        distance_right = 0;
-      do{
-        inversereadline();
+        while(true){
+          inversereadline();
         linefollow();
-        float distance_left = (position_left / CPR) * CIRCUMFERENCE; // Distance in meters
-        float distance_right = (position_right / CPR) * CIRCUMFERENCE; // Distance in meters
-        float length = (distance_left + distance_right)/2;  //average value
-      }while(sensorArray[0] == 0 && sensorArray[9] == 0 && length > 15);
+        if (sensorArray[0] == 1 && sensorArray[9] == 1 && sensorArray[5] == 1){//zero is black
+            break;
+        }
+        }
+      
     }
     //medium box
-    if(distance2 > 10 && distance3 > 10){
+    if(distance2 < 100 && distance3 > 100){
         Turnright();
-        do{
-          inversereadline();
-          linefollow();
-          }while(sensorArray[0] == 0 && sensorArray[9] == 0); //zero is black
+        inverseavoidjunc();
+        while(true){
+        inversereadline();
+        linefollow();
+        if (sensorArray[0] == 1 && sensorArray[9] == 1){//zero is black
+            break;
+        }
+        }
         Turnleft();
         Placerealbox();
         Turnleft();
-        distance_left = 0;
-        distance_right = 0;
-        do{
-          inversereadline();
-          linefollow();
-          float distance_left = (position_left / CPR) * CIRCUMFERENCE; // Distance in meters
-          float distance_right = (position_right / CPR) * CIRCUMFERENCE; // Distance in meters
-          float length = (distance_left + distance_right)/2;  //average value
-        }while(sensorArray[0] == 0 && sensorArray[9] == 0 && length > 35); //zero is black
-    }
-    //small box
-    if(distance2 <= 10 && distance3 <= 10){
-      Turnright();
-      distance_left = 0;
-      distance_right = 0;
-      do{
+        inverseavoidjunc();
+        while(true){
         inversereadline();
         linefollow();
-        float distance_left = (position_left / CPR) * CIRCUMFERENCE; // Distance in meters
-        float distance_right = (position_right / CPR) * CIRCUMFERENCE; // Distance in meters
-        float length = (distance_left + distance_right)/2;  //average value
-      }while(sensorArray[0] == 0 && sensorArray[9] == 0 && length > 35); //zero is black
+        if (sensorArray[0] == 1 && sensorArray[9] == 1){//zero is black
+            break;
+        }
+        }
+        jump();
+        while(true){
+        inversereadline();
+        linefollow();
+        if (sensorArray[0] == 1 && sensorArray[9] == 1){//zero is black
+            break;
+        }
+        }
+    }
+    //small box
+    if(distance2 > 100 && distance3 > 100){
+      Turnright();
+      inverseavoidjunc();
+      while(true){
+        inversereadline();
+        linefollow();
+        if (sensorArray[0] == 1 && sensorArray[9] == 1){//zero is black
+            break;
+        }
+        }
+        jump();
+        while(true){
+        inversereadline();
+        linefollow();
+        if (sensorArray[0] == 1 && sensorArray[9] == 1){//zero is black
+            break;
+        }
+        }
       Turnleft();
       Placerealbox();
       Turnleft();
-      distance_left = 0;
-      distance_right = 0;
-      do{
+      while(true){
         inversereadline();
         linefollow();
-        float distance_left = (position_left / CPR) * CIRCUMFERENCE; // Distance in meters
-        float distance_right = (position_right / CPR) * CIRCUMFERENCE; // Distance in meters
-        float length = (distance_left + distance_right)/2;  //average value
-      }while(sensorArray[0] == 0 && sensorArray[9] == 0 && length > 65);
-    }
+        if (sensorArray[0] == 1 && sensorArray[9] == 1){//zero is black
+            break;
+        }
+        }
+        jump();
+        while(true){
+        inversereadline();
+        linefollow();
+        if (sensorArray[0] == 1 && sensorArray[9] == 1){//zero is black
+            break;
+        }
+        }
+        while(true){
+        inversereadline();
+        linefollow();
+        if (sensorArray[0] == 1 && sensorArray[9] == 1 && sensorArray[5] == 1){//zero is black
+            break;
+        }
+        }
+   }
+   }
 }
 
 
@@ -1971,12 +2208,46 @@ int Junction(){
 
 //avoid junction errors
 void avoidjunc(){
-  while(position_left < 110 && position_right < 110){
+  position_left = 0;
+  position_right = 0;
+  while(position_left < 40 && position_right < 40){
     readLine();
     linefollow();
   }
   motor2run(0);
   motor1run(0);
+}
+
+void inverseavoidjunc(){
+  while(position_left < 110 && position_right < 110){
+    inversereadline();
+    linefollow();
+  }
+  motor2run(0);
+  motor1run(0);
+}
+
+void inversejump(){
+  position_left = 0;
+  position_right = 0; 
+  while(position_left > -110 || position_right > -110){
+    if (position_left > -110 && position_right > -110){
+      motor2run(-lfSpeed);
+      motor1run(lfSpeed);
+    }
+    else if (position_left > -110 && position_right < -110){
+      motor1run(-lfSpeed);
+      motor2run(0);      
+    }
+    else if (position_left < -110 && position_right > -110){
+      motor1run(0);
+      motor2run(-lfSpeed);      
+    }
+    else{
+      motor2run(0);
+      motor1run(0);   
+    }
+  }
 }
 
 //move little bit away from junction
@@ -2369,17 +2640,17 @@ void Dropbox(){
 //drop the box for place the box using servo
 }
 
-int Tof1read(){     //this is for detect the gate  return value is distance
+// int Tof1read(){     //this is for detect the gate  return value is distance
 
-}
+// }
 
-int Tof2read(){
+// int Tof2read(){
 
-}
+// }
 
-int Tof3read(){
+// int Tof3read(){
 
-}
+// }
 
 // Function to read Red Pulse Widths
 int getRedPW() {
@@ -2402,8 +2673,9 @@ int getBluePW() {
 //detect gate closed or open (open retuns false.. close returns true)
 bool gateDetected(){
   int distance;
-    distance = Tof1read();
-    if(distance < 0.25){      //assume that tof output is in meters(condition for distance less than 25cm)
+    read_quad_sensors();
+    distance = Tof4read;
+    if(distance < 250){      //tof output is in millimeters(condition for distance less than 25cm)
       return true;
     }
     else{
@@ -2425,7 +2697,10 @@ int sensorCount(){
 
 void moveForVB0(){
     int colr;
+    delay(500);
     placeBox();
+    delay(500);
+
     while(true){
       synchronizeMotorSpeeds(0);
       if(sensorArray[0]==1 && sensorArray[1]==1){
@@ -2436,21 +2711,25 @@ void moveForVB0(){
   motor2run(0);
   motor1run(0);
 
-    Turnleft();
+  Turnleft();
 
-    while(true){
-      readLine();
-      linefollow();
-      if(sensorArray[0]==1 && sensorArray[1]==1 && sensorArray[8]==1 && sensorArray[9]==1){
-        break;
-      }
+  avoidjunc();
+
+  while(true){
+    readLine();
+    linefollow();
+    if(sensorArray[0]==1 && sensorArray[1]==1 && sensorArray[8]==1 && sensorArray[9]==1){
+      break;
     }
+  }
 
     motor2run(0);
     motor1run(0);
     
     Turnright();
     
+    avoidjunc();
+
     while(true){
       readLine();
       linefollow();
@@ -2484,4 +2763,104 @@ void moveForVB0(){
     }
     placeBox();
     placed = 1;
+}
+
+//Function of tof
+void setID() {
+  // all reset
+  digitalWrite(SHT_LOX1, LOW);    
+  digitalWrite(SHT_LOX2, LOW);
+  digitalWrite(SHT_LOX3, LOW);    
+  digitalWrite(SHT_LOX4, LOW);
+  delay(10);
+  // all unreset
+  digitalWrite(SHT_LOX1, HIGH);
+  digitalWrite(SHT_LOX2, HIGH);
+  digitalWrite(SHT_LOX3, HIGH);
+  digitalWrite(SHT_LOX4, HIGH);
+  delay(10);
+
+  // activating LOX1 and resetting LOX2
+  digitalWrite(SHT_LOX1, HIGH);
+  digitalWrite(SHT_LOX2, LOW);
+  digitalWrite(SHT_LOX3, LOW);    
+  digitalWrite(SHT_LOX4, LOW);
+
+  // initing LOX1
+  if(!lox1.begin(LOX1_ADDRESS)) {
+    Serial.println(F("Failed to boot first VL53L0X"));
+    while(1);
+  }
+  delay(10);
+
+  // activating LOX2
+  digitalWrite(SHT_LOX2, HIGH);
+  delay(10);
+
+  //initing LOX2
+  if(!lox2.begin(LOX2_ADDRESS)) {
+    Serial.println(F("Failed to boot second VL53L0X"));
+    while(1);
+  }
+  digitalWrite(SHT_LOX3, HIGH);
+  delay(10);
+
+  //initing LOX2
+  if(!lox3.begin(LOX3_ADDRESS)) {
+    Serial.println(F("Failed to boot second VL53L0X"));
+    while(1);
+  }
+  digitalWrite(SHT_LOX4, HIGH);
+  delay(10);
+
+  //initing LOX2
+  if(!lox4.begin(LOX4_ADDRESS)) {
+    Serial.println(F("Failed to boot second VL53L0X"));
+    while(1);
+  }
+}
+
+void read_quad_sensors() {
+  
+  lox1.rangingTest(&measure1, false); // pass in 'true' to get debug data printout!
+  lox2.rangingTest(&measure2, false); // pass in 'true' to get debug data printout!
+  lox3.rangingTest(&measure3, false); // pass in 'true' to get debug data printout!
+  lox4.rangingTest(&measure4, false); // pass in 'true' to get debug data printout!
+
+  // print sensor one reading
+  if(measure1.RangeStatus != 4) {     // if not out of range
+    Tof1read =measure1.RangeMilliMeter;
+  } else {
+    Tof1read = 1000;
+  }
+  
+  Serial.print(F(" "));
+
+  // print sensor two reading
+  Serial.print(F("2: "));
+  if(measure2.RangeStatus != 4) {
+    Tof2read = measure2.RangeMilliMeter;
+  } else {
+    Tof2read = 1000;
+  }
+  Serial.print(F(" "));
+
+  // print sensor two reading
+  Serial.print(F("3: "));
+  if(measure3.RangeStatus != 4) {
+    Tof3read = measure3.RangeMilliMeter;
+  } else {
+    Tof3read = 1000;
+  }
+
+  Serial.print(F(" "));
+
+  // print sensor two reading
+  Serial.print(F("4: "));
+  if(measure4.RangeStatus != 4) {
+    Tof4read = measure4.RangeMilliMeter;
+  } else {
+    Tof4read = 1000;
+  }
+  Serial.println();
 }
